@@ -33,7 +33,7 @@ Numéro d'adhérent
 
 <br><br>
 
-<strong>PDP-2026-000001</strong>
+<strong id="numeroAdherent">En cours...</strong>
 
 </div>
 
@@ -48,6 +48,8 @@ Votre carte de membre sera générée automatiquement.
 Le QR Code sera disponible après validation par l'administration.
 
 </p>
+<div id="qrcode"></div>
+
 
 <button onclick="window.location='adhesion.html'">
 
@@ -60,7 +62,22 @@ Retour à l'accueil
 
 <script src="js/script.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script src="js/qrcode.js"></script>
+
+<script>
+
+const numero = localStorage.getItem("numeroAdherent");
+
+if(numero){
+
+    document.getElementById("numeroAdherent").textContent = numero;
+
+}
+
+genererQRCode();
+
+</script>
 </body>
 </html>
