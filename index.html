@@ -1,22 +1,127 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PDP Wérum Réw - Adhésion</title>
+<title>Adhésion en ligne - PDP Wérum Réw</title>
+<link rel="stylesheet" href="css/style.css">
 
-<meta http-equiv="refresh" content="0; url=adhesion.html">
 
 </head>
 
 <body>
 
-<p>
-Chargement de la plateforme d'adhésion...
+<div class="container">
+    
+
+<!-- Logo -->
+
+<img src="images/logo-pdp.jpg" class="logo" alt="Logo">
+
+<h1>Adhésion en ligne</h1>
+
+<p class="slogan">
+
+PDP Wérum Réw – Coordination de Mbao
+
 </p>
 
-</body>
+<div class="presentation">
 
+<p>
+
+Bienvenue sur la plateforme officielle d'adhésion numérique du parti.
+
+Ce formulaire vous permettra de devenir membre en quelques minutes depuis votre téléphone ou votre ordinateur.
+
+Après validation de votre dossier, un numéro d'adhérent sera généré automatiquement ainsi qu'une carte de membre numérique contenant un QR Code.
+
+</p>
+
+</div>
+
+
+<div class="etapes">
+
+<h2>Déroulement de l'adhésion</h2>
+
+<ol>
+
+<li>Informations personnelles</li>
+
+<li>Informations politiques</li>
+
+<li>Informations complémentaires</li>
+
+<li>Validation de l'adhésion</li>
+
+</ol>
+
+</div>
+
+<div class="stats">
+
+<div>
+<h3 id="totalAdherents">0</h3>
+<p>Adhérents inscrits</p>
+</div>
+
+<div>
+<h3 id="communes">1</h3>
+<p>Coordination Mbao</p>
+</div>
+
+<div>
+<h3>2026</h3>
+<p>Campagne d'adhésion</p>
+</div>
+
+</div>
+
+<div>
+
+<button class="btn" onclick="nouvelleAdhesion()">
+🟢 Commencer une nouvelle adhésion
+</button>
+</div>
+
+<button class="btn secondaire" onclick="rechercherCarte()">
+🔎 Retrouver ma carte de membre
+</button>
+
+<button onclick="viderDonnees()">
+Effacer les données
+</button>
+
+<div id="message"></div>
+
+<div class="confidentialite">
+
+<p>
+🔒 Vos informations sont utilisées uniquement dans le cadre de l'adhésion au PDP Wérum Réw.
+</p>
+
+</div>
+
+<div class="footer">
+
+© 2026 Gi.Code - Plateforme numérique d'adhésion
+
+</div>
+
+</div>
+
+<script src="js/script.js"></script>
+
+<script src="js/navigation.js"></script>
+
+<script src="js/validation.js"></script>
+
+<script src="js/geolocalisation.js"></script>
+
+<script src="js/signature.js"></script>
+
+</body>
 </html>
