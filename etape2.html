@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Étape 2 - Informations politiques</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Informations politiques</h2>
+
+<form>
+
+<label>Région</label>
+<input type="text" name="region" required>
+
+<label>Département</label>
+<select name="departement" required>
+<option value="">Choisir</option>
+<option>Dakar</option>
+<option>Pikine</option>
+<option>Guédiawaye</option>
+</select>
+
+
+<label>Commune</label>
+<input type="tel" name="commune" required>
+
+<label>Centre de vote</label>
+<input type="text" name="centre" required>
+
+<label>Bureau de vote</label>
+<input type="text" name="bureauVote">
+
+<label>Cellule</label>
+<input type="text" name="cellule" required>
+
+
+<label>Fonction dans le parti</label>
+<input type="text" name="fonction" required>
+
+
+<label>Date d'adhésion</label>
+<input type="date" name="adhesion" required>
+
+<button type="submit">
+Enregistrer l'adhésion
+</button>
+
+
+<button type="button"
+onclick="precedent()">
+
+Précédent
+
+</button>
+
+<button type="submit">
+Suivant
+</button>
+
+</form>
+
+</div>
+
+
+
+<script src="js/script.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/validation.js"></script>
+
+
+<script>
+const form = document.querySelector("form");
+
+remplirFormulaire();
+
+form.addEventListener("submit", function(e){
+
+    e.preventDefault();
+
+    if(!verifier(form)){
+        return;
+    }
+
+
+    sauvegarderFormulaire(form);
+
+    suivant("etape3.html");
+
+});
+</script>
+</body>
+</html>

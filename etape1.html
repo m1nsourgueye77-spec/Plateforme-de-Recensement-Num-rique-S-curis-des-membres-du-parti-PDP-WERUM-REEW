@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adhésion - PDP Wérum Réw Mbao</title>
+<link rel="stylesheet" href="css/style.css">
+
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Formulaire d'adhésion</h2>
+
+<form id="form1">
+
+<label>Nom et prénom</label>
+<input type="text" name="nom" required>
+
+<label>Date de naissance</label>
+<input type="date" name="naissance" required>
+
+<label>Sexe</label>
+<select name="sexe" required>
+<option value="">Choisir</option>
+<option>Homme</option>
+<option>Femme</option>
+</select>
+
+<label>Téléphone</label>
+<input type="tel" name="telephone" required>
+
+<label>Quartier</label>
+<input type="text" name="quartier" required>
+
+<label>Profession</label>
+<input type="text" name="profession">
+
+<label>Numéro de CNI (facultatif)</label>
+<input type="text" name="cni">
+
+
+
+<button type="button">
+Enregistrer
+</button>
+
+
+
+<button type="submit">
+Suivant
+</button>
+</form>
+
+</div>
+
+
+
+<script src="js/script.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/validation.js"></script>
+
+<script>
+const form = document.getElementById("form1");
+
+// Remplit les champs si des données existent déjà
+remplirFormulaire();
+
+form.addEventListener("submit", function(e){
+
+    e.preventDefault();
+
+    if(!verifier(form)){
+        return;
+    }
+
+
+    sauvegarderFormulaire(form);
+
+    console.log(chargerDonnees());
+
+    suivant("etape2.html");
+
+});
+</script>
+</body>
+</html>
