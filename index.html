@@ -18,7 +18,7 @@
 
 <!-- Logo -->
 
-<img src="images/logo-pdp.jpg" class="logo" alt="Logo">
+<img src="logo-pdp.jpg" class="logo" alt="Logo">
 
 <h1>Adhésion en ligne</h1>
 
@@ -105,6 +105,31 @@ Effacer les données
 
 </div>
 
+<div class="presentation">
+
+<p>
+Après validation de votre dossier, un numéro d'adhérent sera généré automatiquement ainsi qu'une carte de membre numérique contenant un QR Code.
+</p>
+
+</div>
+
+
+<!-- Zone après adhésion -->
+<div id="resultatAdhesion">
+
+<h2>Votre carte de membre</h2>
+
+<p id="numeroAdherent"></p>
+
+<button onclick="genererPDF()">
+📄 Télécharger ma carte PDF
+</button>
+
+</div>
+
+
+
+
 <div class="footer">
 
 © 2026 Gi.Code - Plateforme numérique d'adhésion
@@ -114,14 +139,11 @@ Effacer les données
 </div>
 
 <script src="js/script.js"></script>
-
-<script src="js/navigation.js"></script>
-
 <script src="js/validation.js"></script>
-
 <script src="js/geolocalisation.js"></script>
-
 <script src="js/signature.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/pdf.js"></script>
 
 </body>
 </html>
