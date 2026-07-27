@@ -2,8 +2,30 @@
 // QR Code
 // ======================================
 
-function genererQRCode(numero){
+function genererQRCode(){
 
-console.log("QR Code :",numero);
+    const numero = localStorage.getItem("numeroAdherent");
+
+    const zoneQR = document.getElementById("qrcode");
+
+
+    if(numero && zoneQR){
+
+        new QRCode(
+            zoneQR,
+            {
+                text: numero,
+                width: 150,
+                height: 150
+            }
+        );
+
+        console.log("QR Code généré :", numero);
+
+    }else{
+
+        console.log("Numéro adhérent introuvable");
+
+    }
 
 }
