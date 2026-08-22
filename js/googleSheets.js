@@ -1,7 +1,7 @@
 function envoyerVersGoogleSheets(data){
 
 
-fetch("https://script.google.com/macros/s/AKfycbx6QPrv8bpWfCFrC-0V-dErUVywvhyzE6yplw8kk6t07mXfXmrtjqwAPaBQwLqwKPl2Jg/exec",{
+fetch("",{
 
 method:"POST",
 
