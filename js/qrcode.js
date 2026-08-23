@@ -1,31 +1,40 @@
-// ======================================
-// QR Code
-// ======================================
+function genererQRCode(numero) {
 
-function genererQRCode(){
-
-    const numero = localStorage.getItem("numeroAdherent");
-
-    const zoneQR = document.getElementById("qrcode");
+    const zone =
+        document.getElementById("qrcode");
 
 
-    if(numero && zoneQR){
+    if (!zone) {
+        return;
+    }
 
-        new QRCode(
-            zoneQR,
-            {
-                text: numero,
-                width: 150,
-                height: 150
-            }
+
+    zone.innerHTML = "";
+
+
+    if (!numero) {
+
+        console.error(
+            "Aucun numéro d'adhérent."
         );
 
-        console.log("QR Code généré :", numero);
-
-    }else{
-
-        console.log("Numéro adhérent introuvable");
+        return;
 
     }
+
+
+    new QRCode(
+        zone,
+        {
+            text: numero,
+
+            width: 180,
+
+            height: 180,
+
+            correctLevel:
+                QRCode.CorrectLevel.H
+        }
+    );
 
 }
