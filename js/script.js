@@ -1,121 +1,138 @@
-  // ======================================
-// Gi.Code
-// PDP Wérum Réw
-// script.js
-// ======================================
-
-// Nom de la clé utilisée dans le navigateur
 const STORAGE_KEY = "adhesionPDP";
 
-// Charger les données
+
 function chargerDonnees() {
 
-    const data = localStorage.getItem(STORAGE_KEY);
+    const donnees =
+        localStorage.getItem(STORAGE_KEY);
 
-    return data ? JSON.parse(data) : {};
+    if (!donnees) {
+        return {};
+    }
 
-}
+    try {
 
-// Sauvegarder les données
-function sauvegarderDonnees(nouvellesDonnees) {
+        return JSON.parse(donnees);
 
-    const anciennesDonnees = chargerDonnees();
+    } catch(error) {
 
-    const donnees = {
-        ...anciennesDonnees,
-        ...nouvellesDonnees
-    };
+        console.error(
+            "Erreur localStorage :",
+            error
+        );
 
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(donnees)
-    );
+        return {};
 
-}
-
-// Lire une valeur
-function lireValeur(cle) {
-
-    const data = chargerDonnees();
-
-    return data[cle] || "";
+    }
 
 }
 
-// Effacer toutes les données
-function viderDonnees() {
 
-    localStorage.removeItem(STORAGE_KEY);
+function sauvegarderFormulaire(form) {
 
-     alert("Les données précédentes ont été supprimées.");
+    const anciennesDonnees =
+        chargerDonnees();
 
-}
 
-// Remplir automatiquement les champs d'un formulaire
-function remplirFormulaire() {
+    const nouvellesDonnees =
+        {};
 
-    const data = chargerDonnees();
 
-    document.querySelectorAll("[name]").forEach(champ => {
+    const elements =
+        form.querySelectorAll(
+            "input, select, textarea"
+        );
 
-        if(data[champ.name] !== undefined){
 
-            champ.value = data[champ.name];
+    elements.forEach(function(element) {
 
-        }
-
-    });
-
-}
-
-// Sauvegarder automatiquement un formulaire
-function sauvegarderFormulaire(form){
-
-    const data = chargerDonnees();
-
-    form.querySelectorAll("[name]").forEach(champ => {
-
-        if(champ.type === "file"){
+        if (!element.name) {
             return;
         }
 
-        data[champ.name] = champ.value;
+
+        // Les fichiers sont traités séparément
+
+        if (
+            element.type === "file"
+        ) {
+            return;
+        }
+
+
+        nouvellesDonnees[element.name] =
+            element.value;
 
     });
 
+
+    const donneesFinales = {
+
+        ...anciennesDonnees,
+
+        ...nouvellesDonnees
+
+    };
+
+
     localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify(data)
+        JSON.stringify(donneesFinales)
+    );
+
+
+    console.log(
+        "Données sauvegardées :",
+        donneesFinales
     );
 
 }
 
 
+function viderDonnees() {
 
-// ================================
-// Validation finale
-// ================================
-
-function validerAdhesion(){
-
-    const data = chargerDonnees();
-
-    console.log(data);
-
-    alert("Toutes les informations sont prêtes à être envoyées.");
-
-
-    envoyerVersGoogleSheets(data);
-
+    localStorage.removeItem(
+        STORAGE_KEY
+    );
 
 }
 
 
+function remplirFormulaire() {
 
-function nouvelleAdhesion(){
+    const data =
+        chargerDonnees();
 
-    localStorage.removeItem("adhesionPDP");
 
-    window.location="etape1.html";
+    const formElements =
+        document.querySelectorAll(
+            "input, select, textarea"
+        );
+
+
+    formElements.forEach(function(element) {
+
+        if (!element.name) {
+            return;
+        }
+
+
+        if (
+            element.type === "file"
+        ) {
+            return;
+        }
+
+
+        if (
+            data[element.name] !== undefined
+        ) {
+
+            element.value =
+                data[element.name];
+
+        }
+
+    });
 
 }
