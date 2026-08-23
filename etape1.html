@@ -17,11 +17,20 @@
 
 <form id="form1">
 
-<label>Nom et prénom</label>
+<label>Prénom et Nom</label>
 <input type="text" name="nom" required>
 
+
+
 <label>Date de naissance</label>
-<input type="date" name="naissance" required>
+<input 
+    type="text" 
+    name="naissance" 
+    placeholder="Ex. 10 Octobre 1980" 
+    required
+>
+
+
 
 <label>Sexe</label>
 <select name="sexe" required>
@@ -39,14 +48,17 @@
 <label>Profession</label>
 <input type="text" name="profession">
 
-<label>Numéro de CNI (facultatif)</label>
-<input type="text" name="cni">
+
+<label> Numéro de CNI Votant</label>
+<input type="text" name="cni" placeholder="Votant">
+
+<label> Numéro de CNI Non Votant</label>
+<input type="text" name="nonvotant" placeholder="NonVotant">
 
 
+<label>Numéro Carte Electeur</label>
+<input type="text" name="electeur">
 
-<button type="button">
-Enregistrer
-</button>
 
 
 
