@@ -1,70 +1,109 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Étape 3 - Informations complémentaires</title>
+    <meta charset="UTF-8">
 
-<link rel="stylesheet" href="css/style.css">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Étape 3 - Informations complémentaires</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
 </head>
+
 <body>
 
 <div class="container">
 
-<h1>Informations complémentaires</h1>
-
-<form>
-
-<label>Photo (facultative)</label>
-<input
-type="file"
-name="photo"
-accept="image/*">
-
-<label>Localisation GPS</label>
-<button type="button" class="gps-btn" onclick="obtenirPosition()">
-Partager ma position
-</button>
-
-<input type="text" id="gps" name="gps" readonly placeholder="Coordonnées GPS">
-
-<label>Personne à contacter en cas d'urgence</label>
-<input type="text" name="personneUrgence">
-
-<label>Téléphone de cette personne</label>
-<input type="tel" name="telephoneUrgence">
-
-<label>Signature électronique (facultative)</label>
-
-<div class="signature-box">
-<canvas id="signature"></canvas>
-</div>
-<input
-type="hidden"
-name="signature"
-id="signatureData">
-
-<button type="button" class="clear-btn" onclick="effacerSignature()">
-Effacer la signature
-</button>
+    <h1>Informations complémentaires</h1>
 
 
-
-<button type="button"
-onclick="precedent()">
-
-Précédent
-
-</button>
+    <form id="form3">
 
 
+        <label>
+            Photo
+            <span>(facultative)</span>
+        </label>
+
+        <input
+            type="file"
+            id="photo"
+            name="photo"
+            accept="image/*"
+        >
 
 
-<button type="submit">
-Suivant
-</button>
-</form>
+        <label>
+            Collecteur
+        </label>
+
+        <input
+            type="text"
+            name="nomcollecteur"
+        >
+
+
+        <label>
+            Contact du collecteur
+        </label>
+
+        <input
+            type="tel"
+            name="contactcollecteur"
+        >
+
+
+        <label>
+            Signature électronique
+            <span>(facultative)</span>
+        </label>
+
+
+        <div class="signature-box">
+
+            <canvas id="signature"></canvas>
+
+        </div>
+
+
+        <input
+            type="hidden"
+            name="signature"
+            id="signatureData"
+        >
+
+
+        <button
+            type="button"
+            class="clear-btn"
+            onclick="effacerSignature()"
+        >
+            Effacer la signature
+        </button>
+
+
+        <div class="actions">
+
+            <button
+                type="button"
+                onclick="precedent()"
+            >
+                ← Précédent
+            </button>
+
+
+            <button type="submit">
+                Suivant →
+            </button>
+
+        </div>
+
+
+    </form>
 
 </div>
 
@@ -72,29 +111,126 @@ Suivant
 <script src="js/script.js"></script>
 <script src="js/navigation.js"></script>
 <script src="js/validation.js"></script>
-<script src="js/geolocalisation.js"></script>
 <script src="js/signature.js"></script>
 
 
 <script>
-const form = document.querySelector("form");
+
+const form = document.getElementById("form3");
+
 
 remplirFormulaire();
 
-form.addEventListener("submit", function(e){
+
+form.addEventListener("submit", function(e) {
 
     e.preventDefault();
 
-    if(!verifier(form)){
+
+    if (!verifier(form)) {
         return;
     }
 
 
+    // ==========================================
+    // SIGNATURE
+    // ==========================================
+
+    const canvas =
+        document.getElementById("signature");
+
+    const signatureData =
+        document.getElementById("signatureData");
+
+
+    if (
+        canvas &&
+        signatureData &&
+        canvas.width > 0
+    ) {
+
+        try {
+
+            signatureData.value =
+                canvas.toDataURL("image/png");
+
+        } catch(error) {
+
+            console.error(
+                "Erreur signature :",
+                error
+            );
+
+        }
+
+    }
+
+
+    // ==========================================
+    // SAUVEGARDE DES CHAMPS
+    // ==========================================
+
     sauvegarderFormulaire(form);
 
-    suivant("etape4.html");
+
+    // ==========================================
+    // PHOTO
+    // ==========================================
+
+    const photoInput =
+        document.getElementById("photo");
+
+
+    if (
+        photoInput &&
+        photoInput.files &&
+        photoInput.files.length > 0
+    ) {
+
+        const fichier =
+            photoInput.files[0];
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload = function(event) {
+
+            const data =
+                chargerDonnees();
+
+
+            data.photo =
+                event.target.result;
+
+
+            localStorage.setItem(
+                "adhesionPDP",
+                JSON.stringify(data)
+            );
+
+
+            suivant("etape4.html");
+
+        };
+
+
+        reader.readAsDataURL(fichier);
+
+
+    } else {
+
+        // Pas de photo
+
+        suivant("recapitulatif.html");
+
+    }
 
 });
-</script>>
+
+</script>
+
 </body>
+
 </html>
