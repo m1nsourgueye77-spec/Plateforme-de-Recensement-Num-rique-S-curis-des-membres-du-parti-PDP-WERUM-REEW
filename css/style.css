@@ -142,3 +142,75 @@ td:first-child{
     font-size:16px;
     cursor:pointer;
 }
+
+
+
+@media print {
+
+    button,
+    .actions {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+    }
+
+    .container {
+        width: 100%;
+        box-shadow: none;
+    }
+
+}
+
+
+@media print {
+
+    body {
+        background: white !important;
+        color: black !important;
+    }
+
+    .container {
+        width: 100%;
+        max-width: none;
+        box-shadow: none;
+        border: none;
+    }
+
+    .actions,
+    button,
+    .certification input {
+        display: none !important;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    h2 {
+        margin-top: 25px;
+        border-bottom: 1px solid #000;
+        padding-bottom: 5px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table td {
+        border: 1px solid #333;
+        padding: 8px;
+    }
+
+    table td:first-child {
+        font-weight: bold;
+        width: 35%;
+    }
+
+    .certification {
+        margin-top: 30px;
+    }
+
+}
