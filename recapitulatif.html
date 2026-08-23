@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Récapitulatif - Adhésion PDP Wérum Réw</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Vérification des informations</h1>
+
+    <p>
+        Merci de vérifier attentivement les informations ci-dessous
+        avant de valider votre adhésion.
+    </p>
+
+
+    <!-- ============================== -->
+    <!-- INFORMATIONS PERSONNELLES -->
+    <!-- ============================== -->
+
+    <h2>Informations personnelles</h2>
+
+    <table>
+
+        <tr>
+            <td>Prénom et Nom</td>
+            <td id="nom">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Date de naissance</td>
+            <td id="naissance">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Sexe</td>
+            <td id="sexe">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Téléphone</td>
+            <td id="telephone">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Adresse / Quartier</td>
+            <td id="adresse">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Profession</td>
+            <td id="profession">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Numéro de CNI</td>
+            <td id="cni">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Numéro de Non Votant</td>
+            <td id="nonvotant">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Numéro Carte Électeur</td>
+            <td id="electeur">Non renseigné</td>
+        </tr>
+
+    
+
+    </table>
+
+
+    <!-- ============================== -->
+    <!-- LOCALISATION POLITIQUE -->
+    <!-- ============================== -->
+
+    <h2>Localisation électorale</h2>
+
+    <table>
+
+        <tr>
+            <td>Région</td>
+            <td id="region">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Département</td>
+            <td id="departement">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Commune</td>
+            <td id="commune">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Centre de vote</td>
+            <td id="centre">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Bureau de vote N°</td>
+            <td id="bureau">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Cellule</td>
+            <td id="cellule">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Fonction dans le parti</td>
+            <td id="fonction">Non renseigné</td>
+        </tr>
+
+        <tr>
+    <td>Poste de responsabilité</td>
+    <td id="poste_responsabilite">
+        Non renseigné
+    </td>
+        </tr>
+
+        <tr>
+    <td>Numéro adhérent</td>
+    <td id="numeroAdherent">Non attribué</td>
+       </tr>
+
+       <tr>
+    <td>Date de validation</td>
+    <td id="dateValidation">Non renseignée</td>
+      </tr>
+
+        <tr>
+            <td>Date d'adhésion</td>
+            <td id="adhesion">Non renseigné</td>
+        </tr>
+
+    </table>
+
+
+    <!-- ============================== -->
+    <!-- CONTACT D'URGENCE -->
+    <!-- ============================== -->
+
+    <h2>Collecteur</h2>
+
+    <table>
+
+        <tr>
+            <td>Nom</td>
+            <td id="nomcollecteur">Non renseigné</td>
+        </tr>
+
+        <tr>
+            <td>Contact</td>
+            <td id="contactcollecteur">Non renseigné</td>
+        </tr>
+
+    </table>
+
+
+    <!-- ============================== -->
+    <!-- CERTIFICATION -->
+    <!-- ============================== -->
+
+    <div class="certification">
+
+        <label>
+
+            <input
+                type="checkbox"
+                id="certification"
+            >
+
+            Je certifie que toutes les informations fournies
+            sont exactes et j'accepte les conditions d'adhésion.
+
+        </label>
+
+    </div>
+
+
+    <!-- ============================== -->
+    <!-- ACTIONS -->
+    <!-- ============================== -->
+
+    <div class="actions">
+
+        <button
+            type="button"
+            onclick="precedent()"
+        >
+            ← Précédent
+        </button>
+
+
+        <button
+            type="button"
+            class="valider"
+            id="btnValider"
+            onclick="validerAdhesion()"
+        >
+            ✓ Valider mon adhésion
+        </button>
+
+    </div>
+
+
+    <div
+    id="exports"
+    style="margin-top:20px;">
+
+    <button
+        type="button"
+        onclick="exporterPDF()">
+        📄 Télécharger PDF
+    </button>
+
+    <button
+        type="button"
+        onclick="exporterExcel()">
+        📊 Télécharger Excel
+    </button>
+
+</div>
+
+
+    <p id="message"
+       style="margin-top:20px;">
+    </p>
+
+</div>
+
+
+<!-- ============================== -->
+<!-- JAVASCRIPT -->
+<!-- ============================== -->
+
+<script src="js/script.js"></script>
+
+<script src="js/navigation.js"></script>
+
+<script src="js/googleSheets.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+
+<script src="js/pdf.js"></script>
+<script src="js/excel.js"></script>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const data = chargerDonnees();
+
+    console.log(
+        "Données récupérées depuis localStorage :",
+        data
+    );
+
+
+    // ==============================
+    // AFFICHAGE
+    // ==============================
+
+    document.getElementById("nom").textContent =
+        data.nom || "Non renseigné";
+
+    document.getElementById("naissance").textContent =
+        data.naissance || "Non renseigné";
+
+    document.getElementById("sexe").textContent =
+        data.sexe || "Non renseigné";
+
+    document.getElementById("telephone").textContent =
+        data.telephone || "Non renseigné";
+
+    document.getElementById("adresse").textContent =
+        data.quartier || data.adresse || "Non renseigné";
+
+    document.getElementById("profession").textContent =
+        data.profession || "Non renseigné";
+
+    document.getElementById("cni").textContent =
+        data.cni || "Non renseigné";
+
+    document.getElementById("nonvotant").textContent =
+        data.nonvotant || "Non renseigné";
+
+    document.getElementById("electeur").textContent =
+        data.electeur || "Non renseigné";
+
+    document.getElementById("region").textContent =
+        data.region || "Non renseigné";
+
+    document.getElementById("departement").textContent =
+        data.departement || "Non renseigné";
+
+    document.getElementById("commune").textContent =
+        data.commune || "Non renseigné";
+
+    document.getElementById("centre").textContent =
+        data.centre || "Non renseigné";
+
+    document.getElementById("bureau").textContent =
+        data.bureau || "Non renseigné";
+
+    document.getElementById("cellule").textContent =
+        data.cellule || "Non renseigné";
+
+    document.getElementById("fonction").textContent =
+        data.fonction || "Non renseigné";
+
+        document.getElementById(
+    "poste_responsabilite"
+).textContent =
+    data.poste_responsabilite ||
+    "Non renseigné";
+
+    document.getElementById("numeroAdherent").textContent =
+    data.numeroAdherent || "Non attribué";
+
+    document.getElementById("dateValidation").textContent =
+    data.dateValidation
+        ? new Date(data.dateValidation).toLocaleString("fr-FR")
+        : "Non renseignée";
+
+    document.getElementById("adhesion").textContent =
+        data.adhesion || "Non renseigné";
+
+    document.getElementById("nomcollecteur").textContent =
+        data.nomcollecteur || "Non renseigné";
+
+    document.getElementById("contactcollecteur").textContent =
+        data.contactcollecteur || "Non renseigné";
+
+});
+
+
+// ============================================
+// VALIDATION DE L'ADHÉSION
+// ============================================
+
+function validerAdhesion() {
+
+    const certification =
+        document.getElementById("certification");
+
+    const bouton =
+        document.getElementById("btnValider");
+
+    const message =
+        document.getElementById("message");
+
+
+    // ==========================================
+    // CERTIFICATION
+    // ==========================================
+
+    if (!certification.checked) {
+
+        alert(
+            "Veuillez cocher la case de certification avant de valider."
+        );
+
+        return;
+    }
+
+
+    // ==========================================
+    // RÉCUPÉRATION DES DONNÉES
+    // ==========================================
+
+    const data =
+        chargerDonnees();
+
+
+    // ==========================================
+    // CERTIFICATION
+    // ==========================================
+
+    data.certification = true;
+
+
+    // ==========================================
+    // DATE DE VALIDATION
+    // ==========================================
+
+    data.dateValidation =
+        new Date().toISOString();
+
+
+    // ==========================================
+    // NUMÉRO ADHÉRENT TEMPORAIRE
+    // ==========================================
+
+    if (!data.numeroAdherent) {
+
+        const dernierNumero =
+            parseInt(
+                localStorage.getItem(
+                    "dernierNumeroPDP"
+                ) || "0"
+            );
+
+        const nouveauNumero =
+            dernierNumero + 1;
+
+
+        data.numeroAdherent =
+            "PDP-2026-" +
+            String(nouveauNumero)
+                .padStart(6, "0");
+
+
+        localStorage.setItem(
+            "dernierNumeroPDP",
+            nouveauNumero
+        );
+    }
+
+
+    // ==========================================
+    // SAUVEGARDE IMMÉDIATE
+    // ==========================================
+
+    localStorage.setItem(
+        "adhesionPDP",
+        JSON.stringify(data)
+    );
+
+
+    // ==========================================
+    // CONTRÔLE
+    // ==========================================
+
+    console.log(
+        "DONNÉES FINALES :",
+        data
+    );
+
+
+    // ==========================================
+    // INTERFACE
+    // ==========================================
+
+    bouton.disabled = true;
+
+    bouton.textContent =
+        "⏳ Enregistrement...";
+
+
+    message.textContent =
+        "Enregistrement de votre adhésion...";
+
+
+    // ==========================================
+    // GOOGLE SHEETS
+    // ==========================================
+
+    envoyerVersGoogleSheets(data);
+}
+
+</script>
+
+
+
+</body>
+</html>
