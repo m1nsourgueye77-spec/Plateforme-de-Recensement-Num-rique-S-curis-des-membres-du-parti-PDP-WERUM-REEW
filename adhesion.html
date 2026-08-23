@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Adhésion en ligne - PDP Wérum Réw</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <img
+        src="images/logo-pdp.jpg"
+        class="logo"
+        alt="Logo PDP Wérum Réw"
+    >
+
+
+    <h1>
+        Adhésion en ligne
+    </h1>
+
+
+    <p class="slogan">
+        PDP Wérum Réw – Coordination de Mbao
+    </p>
+
+
+    <div class="presentation">
+
+        <p>
+            Bienvenue sur la plateforme officielle
+            d'adhésion numérique du PDP Wérum Réw.
+        </p>
+
+        <p>
+            Ce formulaire vous permettra de devenir
+            membre en quelques minutes depuis votre
+            téléphone ou votre ordinateur.
+        </p>
+
+        <p>
+            Après validation de votre dossier, un
+            numéro d'adhérent sera généré automatiquement.
+        </p>
+
+    </div>
+
+
+    <div class="etapes">
+
+        <h2>
+            Déroulement de l'adhésion
+        </h2>
+
+        <ol>
+
+            <li>
+                Informations personnelles
+            </li>
+
+            <li>
+                Informations politiques
+            </li>
+
+            <li>
+                Informations complémentaires
+            </li>
+
+            <li>
+                Vérification et validation
+            </li>
+
+        </ol>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="btn"
+        onclick="nouvelleAdhesion()"
+    >
+        🟢 Commencer une nouvelle adhésion
+    </button>
+
+
+    <button
+        type="button"
+        class="btn-effacer"
+        onclick="viderDonnees()"
+    >
+        🗑️ Effacer les anciennes données
+    </button>
+
+
+    <div
+        id="message"
+        class="message"
+    >
+    </div>
+
+
+    <div class="confidentialite">
+
+        <p>
+            🔒 Vos informations sont utilisées
+            uniquement dans le cadre de l'adhésion
+            au PDP Wérum Réw.
+        </p>
+
+    </div>
+
+
+    <div class="footer">
+
+        © 2026 Gi.Code -
+        Plateforme numérique d'adhésion
+
+    </div>
+
+</div>
+
+
+<script src="js/script.js"></script>
+
+<script>
+
+function nouvelleAdhesion() {
+
+    // On supprime uniquement
+    // l'ancienne adhésion
+
+    localStorage.removeItem(
+        "adhesionPDP"
+    );
+
+    localStorage.removeItem(
+        "numeroAdherent"
+    );
+
+    localStorage.removeItem(
+        "adhesionValidee"
+    );
+
+
+    // Démarrage de l'étape 1
+
+    window.location.href =
+        "etape1.html";
+
+}
+
+
+function viderDonnees() {
+
+    const confirmation =
+        confirm(
+            "Voulez-vous vraiment effacer les anciennes données ?"
+        );
+
+
+    if (!confirmation) {
+        return;
+    }
+
+
+    localStorage.removeItem(
+        "adhesionPDP"
+    );
+
+    localStorage.removeItem(
+        "numeroAdherent"
+    );
+
+    localStorage.removeItem(
+        "adhesionValidee"
+    );
+
+
+    const message =
+        document.getElementById("message");
+
+
+    message.textContent =
+        "✓ Les anciennes données ont été effacées.";
+
+
+    message.style.display =
+        "block";
+
+}
+
+</script>
+
+</body>
+
+</html>
