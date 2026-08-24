@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Scanner une carte - PDP Wérum Réw</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <style>
+
+        .scanner-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #reader {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+
+        #resultat {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .succes {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+        }
+
+        .erreur {
+            background: #ffebee;
+            border: 1px solid #f44336;
+        }
+
+        .info-adherent {
+            text-align: left;
+            margin-top: 15px;
+        }
+
+        .info-adherent p {
+            margin: 8px 0;
+        }
+
+        .btn {
+            margin-top: 15px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container scanner-container">
+
+    <h1>
+        📷 Scanner une carte
+    </h1>
+
+    <p>
+        Présentez le QR Code de la carte
+        de membre devant la caméra.
+    </p>
+
+
+    <!-- =============================== -->
+    <!-- LECTEUR QR -->
+    <!-- =============================== -->
+
+    <div id="reader"></div>
+
+
+    <!-- =============================== -->
+    <!-- RESULTAT -->
+    <!-- =============================== -->
+
+    <div id="resultat">
+
+        <h2 id="titreResultat"></h2>
+
+        <div
+            id="informations"
+            class="info-adherent"
+        >
+        </div>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="btn"
+        onclick="window.location.href='adhesion.html'"
+    >
+        🏠 Retour à l'accueil
+    </button>
+
+
+</div>
+
+
+<!-- ================================= -->
+<!-- BIBLIOTHÈQUE QR SCANNER -->
+<!-- ================================= -->
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+
+<!-- ================================= -->
+<!-- SCRIPT DU SCANNER -->
+<!-- ================================= -->
+
+<script src="js/scanner.js"></script>
+
+
+</body>
+
+</html>
