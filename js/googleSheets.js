@@ -19,8 +19,13 @@ function envoyerVersGoogleSheets(data) {
             "⏳ Connexion à Google Sheets...";
     }
 
+    bouton.textContent =
+    "✓ Adhésion enregistrée";
 
     bouton.disabled = true;
+    setTimeout(() => {
+    window.location.href = "merci.html";
+}, 1000);
 
     bouton.textContent =
         "⏳ Enregistrement...";
