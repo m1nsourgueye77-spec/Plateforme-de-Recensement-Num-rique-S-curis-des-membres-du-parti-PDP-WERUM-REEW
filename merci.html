@@ -1,82 +1,525 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>Adhésion enregistrée</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<link rel="stylesheet" href="css/style.css">
+    <title>Adhésion enregistrée</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
 
 </head>
 
+
 <body class="page-merci">
+
 
 <div class="card">
 
-<h1>
+    <h1>
+        🎉 Félicitations !
+    </h1>
 
-🎉 Félicitations !
 
-</h1>
+    <h2>
+        Votre adhésion a été enregistrée
+        avec succès.
+    </h2>
 
-<h2>
 
-Votre adhésion a été enregistrée avec succès.
+    <div class="numero">
 
-</h2>
+        Numéro d'adhérent
 
-<div class="numero">
+        <br><br>
 
-Numéro d'adhérent
+        <strong id="numeroAdherent">
+            En cours...
+        </strong>
 
-<br><br>
+    </div>
 
-<strong id="numeroAdherent">En cours...</strong>
+
+    <p>
+        Votre numéro d'adhérent a été généré
+        automatiquement.
+    </p>
+
+
+    <div
+        id="qrcode"
+        style="margin:20px auto;"
+    >
+    </div>
+
+
+    <p>
+        Présentez ce QR Code pour retrouver
+        votre adhésion.
+    </p>
+
+
+    <button
+        type="button"
+        onclick="telechargerPDF()"
+    >
+        📄 Télécharger ma fiche PDF
+    </button>
+
+
+    <button
+        type="button"
+        onclick="window.location.href='adhesion.html'"
+    >
+        🏠 Retour à l'accueil
+    </button>
+
 
 </div>
 
-<p>
 
-Votre carte de membre sera générée automatiquement.
-
-</p>
-
-<p>
-
-Le QR Code sera disponible après validation par l'administration.
-
-</p>
-<div id="qrcode"></div>
-
-
-<button onclick="window.location='adhesion.html'">
-
-Retour à l'accueil
-
-</button>
-
-</div>
+<!-- =============================== -->
+<!-- JAVASCRIPT -->
+<!-- =============================== -->
 
 <script src="js/script.js"></script>
+
+
+<!-- QR CODE -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script src="js/qrcode.js"></script>
 
+
+<!-- PDF -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
 <script>
 
-const numero = localStorage.getItem("numeroAdherent");
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-if(numero){
 
-    document.getElementById("numeroAdherent").textContent = numero;
+        // =====================================
+        // RÉCUPÉRATION DE L'ADHÉSION
+        // =====================================
+
+        const adhesion =
+            localStorage.getItem(
+                "adhesionPDP"
+            );
+
+
+        const element =
+            document.getElementById(
+                "numeroAdherent"
+            );
+
+
+        if (!adhesion) {
+
+            element.textContent =
+                "Numéro introuvable";
+
+            console.error(
+                "Aucune donnée adhesionPDP trouvée."
+            );
+
+            return;
+        }
+
+
+        let data;
+
+
+        try {
+
+            data =
+                JSON.parse(adhesion);
+
+        } catch (error) {
+
+            console.error(
+                "Erreur JSON :",
+                error
+            );
+
+            element.textContent =
+                "Données invalides";
+
+            return;
+        }
+
+
+        // =====================================
+        // NUMÉRO ADHÉRENT
+        // =====================================
+
+        const numero =
+            data.numeroAdherent;
+
+
+        if (numero) {
+
+            element.textContent =
+                numero;
+
+
+            // =================================
+            // QR CODE
+            // =================================
+
+            if (
+                typeof genererQRCode ===
+                "function"
+            ) {
+
+                genererQRCode(numero);
+
+            } else {
+
+                console.error(
+                    "genererQRCode() introuvable."
+                );
+
+            }
+
+        } else {
+
+            element.textContent =
+                "Numéro introuvable";
+
+        }
+
+
+        console.log(
+            "DONNÉES ADHÉSION :",
+            data
+        );
+
+    }
+);
+
+
+// ==========================================
+// TÉLÉCHARGEMENT PDF
+// ==========================================
+
+function telechargerPDF() {
+
+    const adhesion =
+        localStorage.getItem(
+            "adhesionPDP"
+        );
+
+
+    if (!adhesion) {
+
+        alert(
+            "Aucune donnée d'adhésion disponible."
+        );
+
+        return;
+    }
+
+
+    let data;
+
+
+    try {
+
+        data =
+            JSON.parse(adhesion);
+
+    } catch (error) {
+
+        alert(
+            "Impossible de lire les données."
+        );
+
+        return;
+    }
+
+
+    if (!window.jspdf) {
+
+        alert(
+            "La bibliothèque PDF n'est pas chargée."
+        );
+
+        return;
+    }
+
+
+    const { jsPDF } =
+        window.jspdf;
+
+
+    const doc =
+        new jsPDF();
+
+
+    let y = 20;
+
+
+    // =====================================
+    // TITRE
+    // =====================================
+
+    doc.setFontSize(18);
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.text(
+        "PDP WÉRUM RÉW",
+        105,
+        y,
+        {
+            align: "center"
+        }
+    );
+
+
+    y += 10;
+
+
+    doc.setFontSize(14);
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.text(
+        "FICHE D'ADHÉSION",
+        105,
+        y,
+        {
+            align: "center"
+        }
+    );
+
+
+    y += 15;
+
+
+    // =====================================
+    // INFORMATIONS
+    // =====================================
+
+    const lignes = [
+
+        [
+            "Numéro adhérent",
+            data.numeroAdherent
+        ],
+
+        [
+            "Date de validation",
+            data.dateValidation
+                ? new Date(
+                    data.dateValidation
+                ).toLocaleString("fr-FR")
+                : ""
+        ],
+
+        [
+            "Prénom et Nom",
+            data.nom
+        ],
+
+        [
+            "Date de naissance",
+            data.naissance
+        ],
+
+        [
+            "Sexe",
+            data.sexe
+        ],
+
+        [
+            "Téléphone",
+            data.telephone
+        ],
+
+        [
+            "Adresse / Quartier",
+            data.quartier ||
+            data.adresse
+        ],
+
+        [
+            "Profession",
+            data.profession
+        ],
+
+        [
+            "CNI",
+            data.cni
+        ],
+
+        [
+            "Numéro Non Votant",
+            data.nonvotant
+        ],
+
+        [
+            "Carte électeur",
+            data.electeur
+        ],
+
+        [
+            "Région",
+            data.region
+        ],
+
+        [
+            "Département",
+            data.departement
+        ],
+
+        [
+            "Commune",
+            data.commune
+        ],
+
+        [
+            "Centre de vote",
+            data.centre
+        ],
+
+        [
+            "Bureau de vote",
+            data.bureau
+        ],
+
+        [
+            "Cellule",
+            data.cellule
+        ],
+
+        [
+            "Fonction",
+            data.fonction
+        ],
+
+        [
+            "Poste de responsabilité",
+            data.poste_responsabilite
+        ],
+
+        [
+            "Date d'adhésion",
+            data.adhesion
+        ],
+
+        [
+            "Collecteur",
+            data.nomcollecteur
+        ],
+
+        [
+            "Contact collecteur",
+            data.contactcollecteur
+        ]
+
+    ];
+
+
+    // =====================================
+    // AFFICHAGE
+    // =====================================
+
+    doc.setFontSize(10);
+
+
+    lignes.forEach(
+        function ([label, valeur]) {
+
+
+            if (y > 275) {
+
+                doc.addPage();
+
+                y = 20;
+
+            }
+
+
+            doc.setFont(
+                "helvetica",
+                "bold"
+            );
+
+
+            doc.text(
+                label + " :",
+                20,
+                y
+            );
+
+
+            doc.setFont(
+                "helvetica",
+                "normal"
+            );
+
+
+            doc.text(
+                String(
+                    valeur ||
+                    "Non renseigné"
+                ),
+                80,
+                y
+            );
+
+
+            y += 8;
+
+        }
+    );
+
+
+    // =====================================
+    // TÉLÉCHARGEMENT
+    // =====================================
+
+    const numero =
+        data.numeroAdherent ||
+        "PDP";
+
+
+    doc.save(
+        "Adhesion_" +
+        numero +
+        ".pdf"
+    );
 
 }
 
-genererQRCode();
-
 </script>
+
+
 </body>
+
 </html>
