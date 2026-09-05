@@ -1,0 +1,531 @@
+carte.html<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Carte de membre - PDP Wérum Réw</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+
+        body {
+            background: #eeeeee;
+            font-family: Arial, sans-serif;
+        }
+
+        .carte-page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .carte {
+            width: 860px;
+            max-width: 100%;
+            min-height: 500px;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.20);
+            position: relative;
+        }
+
+        .carte-entete {
+            background: linear-gradient(135deg, #087f3b, #0aa653);
+            color: white;
+            padding: 22px 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-carte {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            background: white;
+            border-radius: 50%;
+            padding: 5px;
+        }
+
+        .titre-carte h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .titre-carte p {
+            margin: 6px 0 0;
+            font-size: 15px;
+        }
+
+        .corps-carte {
+            display: flex;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .photo-zone {
+            width: 190px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .photo-membre {
+            width: 170px;
+            height: 210px;
+            object-fit: cover;
+            border: 4px solid #087f3b;
+            border-radius: 10px;
+            background: #f5f5f5;
+        }
+
+        .infos-membre {
+            flex: 1;
+        }
+
+        .type-carte {
+            color: #087f3b;
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+        }
+
+        .info {
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eeeeee;
+            padding-bottom: 7px;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #777;
+            text-transform: uppercase;
+        }
+
+        .valeur {
+            font-size: 17px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .numero-carte {
+            display: inline-block;
+            background: #087f3b;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .qr-zone {
+            width: 160px;
+            text-align: center;
+        }
+
+        #qrcode {
+            background: white;
+            padding: 8px;
+            display: inline-block;
+            border: 1px solid #ddd;
+        }
+
+        .qr-zone p {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .pied-carte {
+            border-top: 2px solid #087f3b;
+            margin: 0 30px;
+            padding: 18px 0 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+        }
+
+        .signature-zone {
+            width: 220px;
+            text-align: center;
+        }
+
+        .signature-image {
+            width: 180px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .signature-ligne {
+            border-top: 1px solid #333;
+            margin-top: 5px;
+            padding-top: 5px;
+        }
+
+        .responsable {
+            text-align: center;
+            width: 250px;
+        }
+
+        .responsable strong {
+            display: block;
+            color: #087f3b;
+        }
+
+        .actions-carte {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .actions-carte button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #087f3b;
+            color: white;
+            font-size: 15px;
+            margin: 5px;
+        }
+
+        .actions-carte button:hover {
+            opacity: 0.9;
+        }
+
+        @media print {
+
+            body {
+                background: white !important;
+            }
+
+            .carte-page {
+                padding: 0;
+                min-height: auto;
+            }
+
+            .carte {
+                width: 860px;
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .actions-carte {
+                display: none !important;
+            }
+
+        }
+
+        @media(max-width: 700px) {
+
+            .corps-carte {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .pied-carte {
+                flex-direction: column;
+                align-items: center;
+                gap: 25px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="carte-page">
+
+    <div>
+
+        <div class="carte">
+
+            <!-- EN-TÊTE -->
+            <div class="carte-entete">
+
+                <img
+                    src="images/logo-pdp.jpg"
+                    class="logo-carte"
+                    alt="Logo PDP Wérum Réw"
+                >
+
+                <div class="titre-carte">
+
+                    <h1>PDP WÉRUM RÉW</h1>
+
+                    <p>
+                        PARTI POUR LA PAIX, LE DÉVELOPPEMENT
+                        ET LA PROSPÉRITÉ
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CORPS -->
+            <div class="corps-carte">
+
+
+                <!-- PHOTO -->
+                <div class="photo-zone">
+
+                    <img
+                        id="photoMembre"
+                        class="photo-membre"
+                        src=""
+                        alt="Photo du membre"
+                    >
+
+                </div>
+
+
+                <!-- INFORMATIONS -->
+                <div class="infos-membre">
+
+                    <div class="type-carte">
+                        CARTE DE MEMBRE
+                    </div>
+
+                    <div class="numero-carte">
+                        <span id="numeroAdherent">
+                            PDP-2026-000001
+                        </span>
+                    </div>
+
+                    <div class="info">
+
+                        <div class="label">
+                            Prénom et Nom
+                        </div>
+
+                        <div class="valeur" id="nom">
+                            —
+                        </div>
+
+                    </div>
+
+                    <div class="info">
+
+                        <div class="label">
+                            Téléphone
+                        </div>
+
+                        <div class="valeur" id="telephone">
+                            —
+                        </div>
+
+                    </div>
+
+                    <div class="info">
+
+                        <div class="label">
+                            Commune
+                        </div>
+
+                        <div class="valeur" id="commune">
+                            —
+                        </div>
+
+                    </div>
+
+                    <div class="info">
+
+                        <div class="label">
+                            Cellule
+                        </div>
+
+                        <div class="valeur" id="cellule">
+                            —
+                        </div>
+
+                    </div>
+
+                    <div class="info">
+
+                        <div class="label">
+                            Date d'adhésion
+                        </div>
+
+                        <div class="valeur" id="adhesion">
+                            —
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- QR CODE -->
+                <div class="qr-zone">
+
+                    <div id="qrcode"></div>
+
+                    <p>
+                        Scannez ce QR Code pour vérifier
+                        le numéro du membre.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- PIED DE CARTE -->
+            <div class="pied-carte">
+
+
+                <!-- SIGNATURE -->
+                <div class="signature-zone">
+
+                    <img
+                        id="signatureMembre"
+                        class="signature-image"
+                        src=""
+                        alt="Signature du membre"
+                    >
+
+                    <div class="signature-ligne">
+                        Signature du membre
+                    </div>
+
+                </div>
+
+
+                <!-- RESPONSABLE -->
+                <div class="responsable">
+
+                    <strong>
+                        Président / Secrétaire
+                    </strong>
+
+                    <div>
+                        Nom du Président
+                    </div>
+
+                    <small>
+                        PDP Wérum Réw
+                    </small>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- BOUTONS -->
+        <div class="actions-carte">
+
+            <button onclick="window.print()">
+                📄 Télécharger / Imprimer la carte
+            </button>
+
+            <button onclick="window.location='adhesion.html'">
+                🏠 Retour à l'accueil
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="js/script.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
+<script>
+
+const data = chargerDonnees();
+
+const numero = localStorage.getItem("numeroAdherent");
+
+
+/* NUMÉRO */
+
+if (numero) {
+
+    document.getElementById("numeroAdherent").textContent = numero;
+
+}
+
+
+/* INFORMATIONS */
+
+document.getElementById("nom").textContent =
+    data.nom || "—";
+
+document.getElementById("telephone").textContent =
+    data.telephone || "—";
+
+document.getElementById("commune").textContent =
+    data.commune || "—";
+
+document.getElementById("cellule").textContent =
+    data.cellule || "—";
+
+document.getElementById("adhesion").textContent =
+    data.adhesion || "—";
+
+
+/* PHOTO */
+
+if (data.photo) {
+
+    document.getElementById("photoMembre").src =
+        data.photo;
+
+} else {
+
+    document.getElementById("photoMembre").style.display =
+        "none";
+
+}
+
+
+/* SIGNATURE */
+
+if (data.signature) {
+
+    document.getElementById("signatureMembre").src =
+        data.signature;
+
+} else {
+
+    document.getElementById("signatureMembre").style.display =
+        "none";
+
+}
+
+
+/* QR CODE */
+
+if (numero) {
+
+    new QRCode(
+        document.getElementById("qrcode"),
+        {
+            text: numero,
+            width: 140,
+            height: 140
+        }
+    );
+
+}
+
+</script>
+
+</body>
+</html>
