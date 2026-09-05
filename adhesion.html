@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Adhésion en ligne - PDP Wérum Réw</title>
+    <title>Adhésion en ligne - Parti- Mouvement - Association</title>
 
     <link
         rel="stylesheet"
@@ -24,7 +24,7 @@
 <div class="container">
 
     <img
-        src="logo-pdp.jpg"
+        src="images/logo-.jpg"
         class="logo"
         alt="Logo PDP Wérum Réw"
     >
@@ -36,7 +36,7 @@
 
 
     <p class="slogan">
-        PDP Wérum Réw – Coordination de Mbao
+        Parti- Mouvement - Association – Coordination de ...
     </p>
 
 
@@ -90,29 +90,33 @@
     </div>
 
 
-    <button
-        type="button"
-        class="btn"
-        onclick="nouvelleAdhesion()"
-    >
+    <div>
+
+    <button class="btn" onclick="nouvelleAdhesion()">
         🟢 Commencer une nouvelle adhésion
     </button>
 
-
     <button
         type="button"
-        class="btn-effacer"
-        onclick="viderDonnees()"
+        class="btn secondaire"
+        onclick="ouvrirScanner()"
     >
-        🗑️ Effacer les anciennes données
+        📷 Scanner une carte
     </button>
 
-
-    <div
-        id="message"
-        class="message"
+    <button
+        onclick="viderDonnees()"
+        class="btn-effacer"
     >
-    </div>
+        Effacer les anciennes données
+    </button>
+
+</div>
+
+<p id="messageScanner"></p>
+
+
+   
 
 
     <div class="confidentialite">
@@ -135,8 +139,12 @@
 
 </div>
 
-
+<script src="js/config.js"></script>
 <script src="js/script.js"></script>
+<script src="js/validation.js"></script>
+<script src="js/signature.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/pdf.js"></script>
 
 <script>
 
