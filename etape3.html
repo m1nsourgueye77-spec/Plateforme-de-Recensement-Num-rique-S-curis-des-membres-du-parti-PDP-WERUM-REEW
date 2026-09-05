@@ -24,17 +24,20 @@
     <form id="form3">
 
 
-        <label>
-            Photo
-            <span>(facultative)</span>
-        </label>
+        <div class="form-group">
 
-        <input
-            type="file"
-            id="photo"
-            name="photo"
-            accept="image/*"
-        >
+    <label for="photo">
+        Photo du membre
+    </label>
+
+    <input
+        type="file"
+        id="photo"
+        name="photo"
+        accept="image/*"
+    >
+
+</div>
 
 
         <label>
@@ -231,6 +234,40 @@ form.addEventListener("submit", function(e) {
 
 </script>
 
-</body>
+    <script>
 
+const photoInput = document.getElementById("photo");
+
+if (photoInput) {
+
+    photoInput.addEventListener("change", function () {
+
+        const fichier = this.files[0];
+
+        if (!fichier) return;
+
+        const lecteur = new FileReader();
+
+        lecteur.onload = function (e) {
+
+            const data = chargerDonnees();
+
+            data.photo = e.target.result;
+
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(data)
+            );
+
+        };
+
+        lecteur.readAsDataURL(fichier);
+
+    });
+
+}
+
+</script>
+
+</body>
 </html>
