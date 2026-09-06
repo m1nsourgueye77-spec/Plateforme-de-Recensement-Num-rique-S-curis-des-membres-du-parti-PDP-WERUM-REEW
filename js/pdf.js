@@ -2,7 +2,7 @@ function exporterPDF() {
 
     const data = chargerDonnees();
 
-    if (!data) {
+    if (!data || Object.keys(data).length === 0) {
         alert("Aucune donnée d'adhésion disponible.");
         return;
     }
@@ -17,6 +17,35 @@ function exporterPDF() {
     const doc = new jsPDF();
 
     let y = 20;
+
+
+    // ==============================
+    // LOGO PDP
+    // ==============================
+
+    try {
+
+        doc.addImage(
+            "images/logo-pdp.jpg",
+            "JPEG",
+            85,
+            8,
+            40,
+            20
+        );
+
+        y = 35;
+
+    } catch (error) {
+
+        console.warn(
+            "Logo PDP non chargé :",
+            error
+        );
+
+        y = 20;
+    }
+
 
     // ==============================
     // TITRE
@@ -55,7 +84,8 @@ function exporterPDF() {
 
         ["Numéro adhérent", data.numeroAdherent],
 
-        ["Date de validation",
+        [
+            "Date de validation",
             data.dateValidation
                 ? new Date(data.dateValidation)
                     .toLocaleString("fr-FR")
@@ -70,7 +100,8 @@ function exporterPDF() {
 
         ["Téléphone", data.telephone],
 
-        ["Adresse / Quartier",
+        [
+            "Adresse / Quartier",
             data.quartier || data.adresse
         ],
 
@@ -105,7 +136,8 @@ function exporterPDF() {
 
         ["Collecteur", data.nomcollecteur],
 
-        ["Contact collecteur",
+        [
+            "Contact collecteur",
             data.contactcollecteur
         ]
 
@@ -120,14 +152,17 @@ function exporterPDF() {
 
     lignes.forEach(([label, valeur]) => {
 
-        if (y > 275) {
+        if (y > 270) {
 
             doc.addPage();
 
             y = 20;
         }
 
-        doc.setFont("helvetica", "bold");
+        doc.setFont(
+            "helvetica",
+            "bold"
+        );
 
         doc.text(
             `${label} :`,
@@ -135,10 +170,15 @@ function exporterPDF() {
             y
         );
 
-        doc.setFont("helvetica", "normal");
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
 
         doc.text(
-            String(valeur || "Non renseigné"),
+            String(
+                valeur || "Non renseigné"
+            ),
             80,
             y
         );
@@ -154,7 +194,18 @@ function exporterPDF() {
 
     y += 8;
 
-    doc.setFont("helvetica", "bold");
+    // Vérifier l'espace disponible
+    if (y > 235) {
+
+        doc.addPage();
+
+        y = 25;
+    }
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
 
     doc.text(
         "Certification",
@@ -164,7 +215,10 @@ function exporterPDF() {
 
     y += 8;
 
-    doc.setFont("helvetica", "normal");
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
 
     doc.text(
         "Je certifie que toutes les informations",
@@ -187,6 +241,187 @@ function exporterPDF() {
         20,
         y
     );
+
+
+    // ==============================
+    // SIGNATURES
+    // ==============================
+
+    y += 20;
+
+    // Vérifier l'espace
+    if (y > 235) {
+
+        doc.addPage();
+
+        y = 30;
+    }
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.text(
+        "VALIDATION OFFICIELLE",
+        105,
+        y,
+        { align: "center" }
+    );
+
+    y += 12;
+
+
+    // Ligne gauche
+    doc.text(
+        "Le Secrétaire Général",
+        55,
+        y,
+        { align: "center" }
+    );
+
+
+    // Ligne droite
+    doc.text(
+        "Le Président",
+        155,
+        y,
+        { align: "center" }
+    );
+
+
+    y += 8;
+
+
+    // ==============================
+    // SIGNATURE SG
+    // ==============================
+
+    try {
+
+        doc.addImage(
+            "images/signature-sg.png",
+            "PNG",
+            30,
+            y,
+            50,
+            25
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Signature SG non chargée :",
+            error
+        );
+
+    }
+
+
+    // ==============================
+    // SIGNATURE PRÉSIDENT
+    // ==============================
+
+    try {
+
+        doc.addImage(
+            "images/signature-president.png",
+            "PNG",
+            130,
+            y,
+            50,
+            25
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Signature Président non chargée :",
+            error
+        );
+
+    }
+
+
+    y += 32;
+
+
+    // Lignes de signature
+    doc.line(
+        30,
+        y,
+        80,
+        y
+    );
+
+    doc.line(
+        130,
+        y,
+        180,
+        y
+    );
+
+
+    y += 7;
+
+    doc.setFontSize(9);
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.text(
+        "Signature",
+        55,
+        y,
+        { align: "center" }
+    );
+
+    doc.text(
+        "Signature",
+        155,
+        y,
+        { align: "center" }
+    );
+
+
+    // ==============================
+    // PIED DE PAGE
+    // ==============================
+
+    const pageCount =
+        doc.internal.getNumberOfPages();
+
+    for (
+        let page = 1;
+        page <= pageCount;
+        page++
+    ) {
+
+        doc.setPage(page);
+
+        doc.setFontSize(8);
+
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
+
+        doc.text(
+            "PDP Wérum Réw – Document officiel d'adhésion",
+            105,
+            290,
+            { align: "center" }
+        );
+
+        doc.text(
+            "Généré par Gi.Code",
+            105,
+            295,
+            { align: "center" }
+        );
+    }
 
 
     // ==============================
