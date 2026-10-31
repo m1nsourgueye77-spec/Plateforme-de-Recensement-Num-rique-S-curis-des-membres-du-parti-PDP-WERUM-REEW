@@ -66,6 +66,34 @@
             cursor: pointer;
         }
 
+
+
+
+        .import-qr {
+    text-align: center;
+    margin: 25px auto;
+    padding: 20px;
+    border: 1px dashed #008C99;
+    border-radius: 12px;
+    max-width: 500px;
+}
+
+.import-qr .btn {
+    background: #008C99;
+    color: white;
+    padding: 13px 22px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.aide-import {
+    font-size: 13px;
+    color: #666;
+    margin-top: 12px;
+}
+
     </style>
 
 </head>
@@ -92,6 +120,30 @@
 
     <div id="reader"></div>
 
+    <div class="import-qr">
+    <p><strong>Ou importer une image QR Code</strong></p>
+
+    <input
+        type="file"
+        id="qrImageInput"
+        accept="image/*"
+        hidden
+    >
+
+    <button
+        type="button"
+        class="btn"
+        onclick="document.getElementById('qrImageInput').click()"
+    >
+        🖼️ Importer un QR Code
+    </button>
+
+    <p class="aide-import">
+        Sélectionnez une image QR Code depuis votre galerie
+        ou les fichiers de votre appareil.
+    </p>
+</div>
+
 
     <!-- =============================== -->
     <!-- RESULTAT -->
@@ -99,15 +151,22 @@
 
     <div id="resultat">
 
-        <h2 id="titreResultat"></h2>
+    <h2 id="titreResultat"></h2>
 
-        <div
-            id="informations"
-            class="info-adherent"
-        >
-        </div>
+    <div
+        id="informations"
+        class="info-adherent"
+    ></div>
 
-    </div>
+    <button
+        type="button"
+        class="btn"
+        onclick="nouveauScan()"
+    >
+        🔄 Scanner une autre carte
+    </button>
+
+</div>
 
 
     <button
