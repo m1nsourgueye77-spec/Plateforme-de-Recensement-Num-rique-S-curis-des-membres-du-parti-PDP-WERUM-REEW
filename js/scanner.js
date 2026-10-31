@@ -1,408 +1,236 @@
-// ==========================================
-// URL GOOGLE APPS SCRIPT
-// ==========================================
-
 const GOOGLE_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbwBJQQNzMr6P2OTFmHOJcNuF3fAjmd3-tULPyIcNaP1qjkBHZax9UD6rPCmsLlF4Mztxg/exec";
+"https://script.google.com/macros/s/AKfycbwBJQQNzMr6P2OTFmHOJcNuF3fAjmd3-tULPyIcNaP1qjkBHZax9UD6rPCmsLlF4Mztxg/exec";
 
+let scannerQR = null;
+let traitementEnCours = false;
 
-// ==========================================
-// VARIABLES
-// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
 
-let scanner = null;
-
-let scanEnCours = false;
-
-
-// ==========================================
-// INITIALISATION
-// ==========================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        demarrerScanner();
-
+    if (typeof Html5Qrcode === "undefined") {
+        afficherErreur("La bibliothèque du scanner n'est pas disponible.");
+        return;
     }
-);
 
+    scannerQR = new Html5Qrcode("reader");
 
-// ==========================================
-// DÉMARRER LE SCANNER
-// ==========================================
+    const inputImage = document.getElementById("qrImageInput");
 
-function demarrerScanner() {
+    if (inputImage) {
+        inputImage.addEventListener("change", importerQRCode);
+    }
 
-    scanner =
-        new Html5Qrcode(
-            "reader"
+    demarrerCamera();
+});
+
+async function demarrerCamera() {
+
+    if (!scannerQR || traitementEnCours) return;
+
+    try {
+        await scannerQR.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: { width: 250, height: 250 }
+            },
+            async (texteDecode) => {
+                if (traitementEnCours) return;
+
+                traitementEnCours = true;
+
+                await arreterCamera();
+
+                await rechercherAdherent(texteDecode);
+            },
+            () => {}
         );
 
-
-    const configuration = {
-
-        fps: 10,
-
-        qrbox: {
-            width: 250,
-            height: 250
-        }
-
-    };
-
-
-    scanner.start(
-
-        {
-            facingMode: "environment"
-        },
-
-        configuration,
-
-        qrCodeMessage => {
-
-            if (scanEnCours) {
-                return;
-            }
-
-
-            scanEnCours = true;
-
-
-            console.log(
-                "QR Code détecté :",
-                qrCodeMessage
-            );
-
-
-            rechercherAdherent(
-                qrCodeMessage
-            );
-
-
-            scanner.stop().catch(
-                error => {
-                    console.log(
-                        "Arrêt scanner :",
-                        error
-                    );
-                }
-            );
-
-        },
-
-        errorMessage => {
-
-            // Les erreurs de scan
-            // sont normales pendant
-            // la recherche du QR.
-
-        }
-
-    ).catch(error => {
-
-        console.error(
-            "Erreur caméra :",
-            error
+    } catch (erreur) {
+        afficherErreur(
+            "Impossible d'activer la caméra. Vérifiez les autorisations."
         );
+        console.error(erreur);
+    }
+}
 
+async function arreterCamera() {
+
+    if (!scannerQR) return;
+
+    try {
+        await scannerQR.stop();
+    } catch (erreur) {
+        console.log("Caméra déjà arrêtée.");
+    }
+}
+
+async function importerQRCode(event) {
+
+    const fichier = event.target.files[0];
+
+    if (!fichier) return;
+
+    if (!fichier.type.startsWith("image/")) {
+        afficherErreur("Veuillez sélectionner une image valide.");
+        event.target.value = "";
+        return;
+    }
+
+    if (traitementEnCours) return;
+
+    if (!scannerQR) {
+        afficherErreur("Le système de lecture QR Code n'est pas initialisé.");
+        event.target.value = "";
+        return;
+    }
+
+    traitementEnCours = true;
+
+    afficherMessage("Lecture du QR Code importé...");
+
+    try {
+
+        // Arrêter la caméra si elle est active
+        await arreterCamera();
+
+        // Lire directement le QR Code dans l'image
+        const resultat = await scannerQR.scanFile(fichier, false);
+
+        console.log("QR Code détecté :", resultat);
+
+        // Vérifier le numéro auprès de Google Sheets
+        await rechercherAdherent(resultat);
+
+    } catch (erreur) {
+
+        console.error("Erreur importation QR :", erreur);
 
         afficherErreur(
-            "Impossible d'accéder à la caméra. " +
-            "Vérifiez l'autorisation de la caméra."
+            "Impossible de lire le QR Code. Vérifiez que l'image est nette et contient un QR Code."
         );
 
-    });
+        traitementEnCours = false;
 
+    } finally {
+
+        // Permettre de sélectionner à nouveau le même fichier
+        event.target.value = "";
+    }
 }
 
+async function rechercherAdherent(numero) {
 
-// ==========================================
-// RECHERCHE ADHÉRENT
-// ==========================================
+    numero = String(numero).trim();
 
-function rechercherAdherent(
-    numero
-) {
-
-    afficherChargement();
-
-
-    const url =
-        GOOGLE_SCRIPT_URL +
-        "?numero=" +
-        encodeURIComponent(numero);
-
-
-    fetch(url)
-
-        .then(response => {
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Erreur HTTP : " +
-                    response.status
-                );
-
-            }
-
-
-            return response.json();
-
-        })
-
-        .then(data => {
-
-            console.log(
-                "Réponse Google Apps Script :",
-                data
-            );
-
-
-            if (!data.success) {
-
-                throw new Error(
-                    data.message ||
-                    "Adhérent introuvable."
-                );
-
-            }
-
-
-            afficherAdherent(
-                data.adherent
-            );
-
-        })
-
-        .catch(error => {
-
-            console.error(
-                "Erreur recherche :",
-                error
-            );
-
-
-            afficherErreur(
-                error.message ||
-                "Adhérent introuvable."
-            );
-
-
-            // Permettre un nouveau scan
-
-            setTimeout(
-                function () {
-
-                    scanEnCours = false;
-
-                    demarrerScanner();
-
-                },
-                3000
-            );
-
-        });
-
-}
-
-
-// ==========================================
-// AFFICHER CHARGEMENT
-// ==========================================
-
-function afficherChargement() {
-
-    const resultat =
-        document.getElementById(
-            "resultat"
-        );
-
-    const titre =
-        document.getElementById(
-            "titreResultat"
-        );
-
-    const informations =
-        document.getElementById(
-            "informations"
-        );
-
-
-    resultat.style.display =
-        "block";
-
-    resultat.className =
-        "";
-
-
-    titre.textContent =
-        "⏳ Recherche en cours...";
-
-
-    informations.innerHTML =
-        "Recherche de l'adhérent dans la base de données...";
-
-}
-
-
-// ==========================================
-// AFFICHER ADHÉRENT
-// ==========================================
-
-function afficherAdherent(
-    data
-) {
-
-    const resultat =
-        document.getElementById(
-            "resultat"
-        );
-
-    const titre =
-        document.getElementById(
-            "titreResultat"
-        );
-
-    const informations =
-        document.getElementById(
-            "informations"
-        );
-
-
-    resultat.style.display =
-        "block";
-
-
-    resultat.className =
-        "succes";
-
-
-    titre.textContent =
-        "✅ Adhérent trouvé";
-
-
-    informations.innerHTML = `
-
-        <p>
-            <strong>Numéro adhérent :</strong>
-            ${securiser(data.numeroAdherent)}
-        </p>
-
-        <p>
-            <strong>Prénom et Nom :</strong>
-            ${securiser(data.nom)}
-        </p>
-
-        <p>
-            <strong>Téléphone :</strong>
-            ${securiser(data.telephone)}
-        </p>
-
-        <p>
-            <strong>Commune :</strong>
-            ${securiser(data.commune)}
-        </p>
-
-        <p>
-            <strong>Département :</strong>
-            ${securiser(data.departement)}
-        </p>
-
-        <p>
-            <strong>Région :</strong>
-            ${securiser(data.region)}
-        </p>
-
-        <p>
-            <strong>Fonction :</strong>
-            ${securiser(data.fonction)}
-        </p>
-
-        <p>
-            <strong>Date d'adhésion :</strong>
-            ${securiser(data.adhesion)}
-        </p>
-
-        <p>
-            <strong>Date de validation :</strong>
-            ${securiser(data.dateValidation)}
-        </p>
-
-    `;
-
-}
-
-
-// ==========================================
-// ERREUR
-// ==========================================
-
-function afficherErreur(
-    message
-) {
-
-    const resultat =
-        document.getElementById(
-            "resultat"
-        );
-
-    const titre =
-        document.getElementById(
-            "titreResultat"
-        );
-
-    const informations =
-        document.getElementById(
-            "informations"
-        );
-
-
-    resultat.style.display =
-        "block";
-
-
-    resultat.className =
-        "erreur";
-
-
-    titre.textContent =
-        "❌ Adhérent introuvable";
-
-
-    informations.textContent =
-        message;
-
-}
-
-
-// ==========================================
-// SÉCURISATION AFFICHAGE
-// ==========================================
-
-function securiser(
-    valeur
-) {
-
-    if (
-        valeur === null ||
-        valeur === undefined ||
-        valeur === ""
-    ) {
-
-        return "Non renseigné";
-
+    if (!/^PDP-2026-\d{6}$/.test(numero)) {
+        afficherErreur("Ce QR Code ne contient pas un numéro PDP valide.");
+        traitementEnCours = false;
+        return;
     }
 
+    afficherMessage("Vérification de l'adhérent en cours...");
 
-    return String(valeur)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    try {
 
+        const url = GOOGLE_SCRIPT_URL +
+            "?numero=" + encodeURIComponent(numero);
+
+        const reponse = await fetch(url);
+
+        if (!reponse.ok) {
+            throw new Error("Erreur de communication avec le serveur.");
+        }
+
+        const data = await reponse.json();
+
+        if (
+            data.success === false ||
+            !data.numeroAdherent ||
+            data.numeroAdherent !== numero
+        ) {
+            afficherErreur("Numéro d'adhérent introuvable.");
+            traitementEnCours = false;
+            return;
+        }
+
+        afficherSucces(data);
+
+    } catch (erreur) {
+
+        console.error(erreur);
+
+        afficherErreur(
+            "Impossible de vérifier le QR Code. Réessayez."
+        );
+
+        traitementEnCours = false;
+    }
+}
+
+function afficherSucces(data) {
+
+    const resultat = document.getElementById("resultat");
+    const informations = document.getElementById("informations");
+    const titre = document.getElementById("titreResultat");
+
+    titre.textContent = "Vérification réussie";
+
+    resultat.className = "succes";
+
+    informations.textContent = "";
+
+    const numero = document.createElement("p");
+    numero.textContent = "Numéro : " + data.numeroAdherent;
+
+    const statut = document.createElement("p");
+    statut.textContent = "Statut : " + data.statut;
+
+    const date = document.createElement("p");
+    date.textContent =
+        "Date de validation : " + (data.dateValidation || "Non renseignée");
+
+    informations.append(numero, statut, date);
+
+    resultat.style.display = "block";
+}
+
+function afficherErreur(message) {
+
+    const resultat = document.getElementById("resultat");
+    const informations = document.getElementById("informations");
+    const titre = document.getElementById("titreResultat");
+
+    titre.textContent = "Vérification impossible";
+
+    resultat.className = "erreur";
+
+    informations.textContent = message;
+
+    resultat.style.display = "block";
+}
+
+function afficherMessage(message) {
+
+    const resultat = document.getElementById("resultat");
+    const informations = document.getElementById("informations");
+    const titre = document.getElementById("titreResultat");
+
+    titre.textContent = "Veuillez patienter";
+
+    resultat.className = "";
+
+    informations.textContent = message;
+
+    resultat.style.display = "block";
+}
+
+async function nouveauScan() {
+
+    traitementEnCours = false;
+
+    const resultat = document.getElementById("resultat");
+
+    resultat.style.display = "none";
+
+    await demarrerCamera();
 }
