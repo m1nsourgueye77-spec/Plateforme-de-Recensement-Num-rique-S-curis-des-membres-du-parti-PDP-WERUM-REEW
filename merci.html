@@ -276,13 +276,10 @@ function telechargerPDF() {
         ],
 
         [
+            [
             "Date de validation",
-            data.dateValidation
-                ? new Date(
-                    data.dateValidation
-                ).toLocaleString("fr-FR")
-                : ""
-        ],
+             data.dateValidation || "Non renseignée"
+         ],
 
         [
             "Prénom et Nom",
