@@ -109,111 +109,53 @@
 
 <script>
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
+    const elementNumero = document.getElementById("numeroAdherent");
 
-        // =====================================
-        // RÉCUPÉRATION DE L'ADHÉSION
-        // =====================================
+    // Récupération des données enregistrées
+    const adhesion = localStorage.getItem("adhesionPDP");
 
-        const adhesion =
-            localStorage.getItem(
-                "adhesionPDP"
-            );
-
-
-        const element =
-            document.getElementById(
-                "numeroAdherent"
-            );
-
-
-        if (!adhesion) {
-
-            element.textContent =
-                "Numéro introuvable";
-
-            console.error(
-                "Aucune donnée adhesionPDP trouvée."
-            );
-
-            return;
-        }
-
-
-        let data;
-
-
-        try {
-
-            data =
-                JSON.parse(adhesion);
-
-        } catch (error) {
-
-            console.error(
-                "Erreur JSON :",
-                error
-            );
-
-            element.textContent =
-                "Données invalides";
-
-            return;
-        }
-
-
-        // =====================================
-        // NUMÉRO ADHÉRENT
-        // =====================================
-
-        const numero =
-            data.numeroAdherent;
-
-
-        if (numero) {
-
-            element.textContent =
-                numero;
-
-
-            // =================================
-            // QR CODE
-            // =================================
-
-            if (
-                typeof genererQRCode ===
-                "function"
-            ) {
-
-                genererQRCode(numero);
-
-            } else {
-
-                console.error(
-                    "genererQRCode() introuvable."
-                );
-
-            }
-
-        } else {
-
-            element.textContent =
-                "Numéro introuvable";
-
-        }
-
-
-        console.log(
-            "DONNÉES ADHÉSION :",
-            data
-        );
-
+    if (!adhesion) {
+        elementNumero.textContent = "Données introuvables";
+        console.error("Aucune donnée adhesionPDP.");
+        return;
     }
-);
 
+    let data;
+
+    try {
+        data = JSON.parse(adhesion);
+    } catch (error) {
+        elementNumero.textContent = "Données invalides";
+        console.error("Erreur de lecture :", error);
+        return;
+    }
+
+    // Le numéro doit provenir du serveur
+    const numero = data.numeroAdherent;
+
+    if (!numero || !/^PDP-2026-\d{6}$/.test(numero)) {
+        elementNumero.textContent = "Numéro officiel indisponible";
+
+        console.error("Numéro officiel absent ou invalide.");
+
+        return;
+    }
+
+    // Affichage du numéro officiel
+    elementNumero.textContent = numero;
+
+    // Génération du QR Code
+    if (typeof genererQRCode === "function") {
+        genererQRCode(numero);
+    } else {
+        console.error("Fonction genererQRCode introuvable.");
+    }
+
+    console.log("Adhésion confirmée :", numero);
+
+});
 
 // ==========================================
 // TÉLÉCHARGEMENT PDF
