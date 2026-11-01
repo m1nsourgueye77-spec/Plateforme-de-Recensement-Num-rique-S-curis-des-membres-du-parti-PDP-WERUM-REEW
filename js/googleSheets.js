@@ -1,7 +1,7 @@
 // =====================================================
-// PDP WËRUM RÉEW
+// PDP WËRUM RÉW
 // CONNEXION GOOGLE SHEETS
-// VERSION CORRIGÉE
+// VERSION AVEC PROTECTION D'IDEMPOTENCE
 // =====================================================
 
 const GOOGLE_SCRIPT_URL =
@@ -13,6 +13,34 @@ const GOOGLE_SCRIPT_URL =
 // =====================================================
 
 let enregistrementEnCours = false;
+
+
+// =====================================================
+// GÉNÉRATION D'UNE CLÉ UNIQUE
+// =====================================================
+
+function genererCleIdempotence() {
+
+    if (
+        window.crypto &&
+        typeof window.crypto.randomUUID === "function"
+    ) {
+
+        return window.crypto.randomUUID();
+
+    }
+
+    // Solution de secours pour les navigateurs
+    // ne disposant pas de randomUUID.
+
+    return "pdp-" +
+        Date.now().toString(36) +
+        "-" +
+        Math.random().toString(36).substring(2, 15) +
+        "-" +
+        Math.random().toString(36).substring(2, 15);
+
+}
 
 
 // =====================================================
@@ -51,9 +79,7 @@ async function envoyerVersGoogleSheets(data) {
     // -------------------------------------------------
 
     if (enregistrementEnCours) {
-
         return;
-
     }
 
     enregistrementEnCours = true;
@@ -68,28 +94,79 @@ async function envoyerVersGoogleSheets(data) {
 
 
     // -------------------------------------------------
-    // 3. SUPPRESSION DU NUMÉRO TEMPORAIRE FRONTEND
+    // 3. SUPPRESSION DES ANCIENS NUMÉROS TEMPORAIRES
     // -------------------------------------------------
 
-    // Le numéro officiel doit exclusivement
-    // être attribué par Google Apps Script.
-
     delete data.numeroAdherent;
-
     delete data.dateValidation;
 
 
-    // Sauvegarde des données du formulaire
-    // sans faux numéro d'adhérent.
+    // -------------------------------------------------
+    // 4. CRÉATION OU RÉUTILISATION DE LA CLÉ
+    // -------------------------------------------------
 
-    localStorage.setItem(
-        "adhesionPDP",
-        JSON.stringify(data)
+    // Si une clé existe déjà, on la conserve.
+    // Cela permet de réessayer sans créer
+    // une nouvelle transaction.
+
+    if (
+        !data.idempotencyKey ||
+        !/^[a-zA-Z0-9-]{20,80}$/.test(
+            String(data.idempotencyKey)
+        )
+    ) {
+
+        data.idempotencyKey =
+            genererCleIdempotence();
+
+    }
+
+
+    console.log(
+        "CLÉ DE TRANSACTION :",
+        data.idempotencyKey
     );
 
 
     // -------------------------------------------------
-    // 4. PRÉPARATION DE LA REQUÊTE
+    // 5. SAUVEGARDE AVANT L'ENVOI
+    // -------------------------------------------------
+
+    // Très important :
+    // la clé doit être conservée même si
+    // la connexion Internet échoue.
+
+    try {
+
+        localStorage.setItem(
+            "adhesionPDP",
+            JSON.stringify(data)
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Erreur sauvegarde locale :",
+            error
+        );
+
+        message.textContent =
+            "Impossible de sauvegarder les données localement.";
+
+        bouton.disabled = false;
+
+        bouton.textContent =
+            "Réessayer l'enregistrement";
+
+        enregistrementEnCours = false;
+
+        return;
+
+    }
+
+
+    // -------------------------------------------------
+    // 6. PRÉPARATION DE LA REQUÊTE
     // -------------------------------------------------
 
     const controleur =
@@ -104,8 +181,9 @@ async function envoyerVersGoogleSheets(data) {
 
     try {
 
+
         // -------------------------------------------------
-        // 5. ENVOI VERS GOOGLE APPS SCRIPT
+        // 7. ENVOI VERS GOOGLE APPS SCRIPT
         // -------------------------------------------------
 
         const response = await fetch(
@@ -145,7 +223,7 @@ async function envoyerVersGoogleSheets(data) {
 
 
         // -------------------------------------------------
-        // 6. LECTURE DE LA RÉPONSE
+        // 8. LECTURE DE LA RÉPONSE
         // -------------------------------------------------
 
         const resultat =
@@ -173,7 +251,7 @@ async function envoyerVersGoogleSheets(data) {
 
 
         // -------------------------------------------------
-        // 7. VÉRIFICATION DU SUCCÈS
+        // 9. VÉRIFICATION DU SUCCÈS
         // -------------------------------------------------
 
         if (!reponse.success) {
@@ -196,7 +274,7 @@ async function envoyerVersGoogleSheets(data) {
 
 
         // -------------------------------------------------
-        // 8. RÉCUPÉRATION DU NUMÉRO OFFICIEL
+        // 10. RÉCUPÉRATION DU NUMÉRO OFFICIEL
         // -------------------------------------------------
 
         data.numeroAdherent =
@@ -207,7 +285,7 @@ async function envoyerVersGoogleSheets(data) {
 
 
         // -------------------------------------------------
-        // 9. SAUVEGARDE DE L'ADHÉSION CONFIRMÉE
+        // 11. SAUVEGARDE DE L'ADHÉSION CONFIRMÉE
         // -------------------------------------------------
 
         localStorage.setItem(
@@ -221,9 +299,14 @@ async function envoyerVersGoogleSheets(data) {
             data.numeroAdherent
         );
 
+        console.log(
+            "TRANSACTION DÉJÀ ENREGISTRÉE :",
+            reponse.dejaEnregistre === true
+        );
+
 
         // -------------------------------------------------
-        // 10. AFFICHAGE DU SUCCÈS
+        // 12. AFFICHAGE DU SUCCÈS
         // -------------------------------------------------
 
         message.textContent = "";
@@ -261,7 +344,7 @@ async function envoyerVersGoogleSheets(data) {
 
 
         // -------------------------------------------------
-        // 11. REDIRECTION APRÈS CONFIRMATION
+        // 13. REDIRECTION
         // -------------------------------------------------
 
         setTimeout(function() {
@@ -276,7 +359,7 @@ async function envoyerVersGoogleSheets(data) {
 
 
         // -------------------------------------------------
-        // 12. GESTION DES ERREURS
+        // 14. GESTION DES ERREURS
         // -------------------------------------------------
 
         console.error(
@@ -293,7 +376,8 @@ async function envoyerVersGoogleSheets(data) {
 
             messageErreur =
                 "Le délai de connexion a été dépassé. " +
-                "Vérifiez la base avant de réessayer.";
+                "Votre clé de transaction est conservée. " +
+                "Vous pouvez réessayer sans créer volontairement une nouvelle transaction.";
 
         }
 
@@ -333,11 +417,6 @@ async function envoyerVersGoogleSheets(data) {
 
 
     } finally {
-
-
-        // -------------------------------------------------
-        // 13. NETTOYAGE
-        // -------------------------------------------------
 
         clearTimeout(delai);
 
