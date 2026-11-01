@@ -252,7 +252,7 @@ carte.html<!DOCTYPE html>
             <div class="carte-entete">
 
                 <img
-                    src="logo-pdp.jpg"
+                    src="images/logo-pdp.jpg"
                     class="logo-carte"
                     alt="Logo PDP Wérum Réw"
                 >
@@ -297,8 +297,8 @@ carte.html<!DOCTYPE html>
 
                     <div class="numero-carte">
                         <span id="numeroAdherent">
-                            PDP-2026-000001
-                        </span>
+                              Chargement...
+                         </span>
                     </div>
 
                     <div class="info">
@@ -448,82 +448,117 @@ carte.html<!DOCTYPE html>
 
 <script>
 
-const data = chargerDonnees();
+document.addEventListener("DOMContentLoaded", function () {
 
-const numero = localStorage.getItem("numeroAdherent");
+    // =====================================
+    // RÉCUPÉRATION DES DONNÉES
+    // =====================================
 
+    const adhesion = localStorage.getItem("adhesionPDP");
 
-/* NUMÉRO */
+    if (!adhesion) {
+        alert("Aucune donnée d'adhésion disponible.");
+        return;
+    }
 
-if (numero) {
+    let data;
+
+    try {
+        data = JSON.parse(adhesion);
+    } catch (error) {
+        console.error("Erreur de lecture :", error);
+        alert("Impossible de lire les données du membre.");
+        return;
+    }
+
+    // =====================================
+    // VÉRIFICATION DU NUMÉRO OFFICIEL
+    // =====================================
+
+    const numero = data.numeroAdherent;
+
+    if (!numero || !/^PDP-2026-\d{6}$/.test(numero)) {
+
+        document.getElementById("numeroAdherent").textContent =
+            "Numéro indisponible";
+
+        alert("Le numéro officiel de l'adhérent est introuvable.");
+
+        return;
+    }
 
     document.getElementById("numeroAdherent").textContent = numero;
 
-}
+    // =====================================
+    // INFORMATIONS DU MEMBRE
+    // =====================================
 
+    document.getElementById("nom").textContent =
+        data.nom || "—";
 
-/* INFORMATIONS */
+    document.getElementById("telephone").textContent =
+        data.telephone || "—";
 
-document.getElementById("nom").textContent =
-    data.nom || "—";
+    document.getElementById("commune").textContent =
+        data.commune || "—";
 
-document.getElementById("telephone").textContent =
-    data.telephone || "—";
+    document.getElementById("cellule").textContent =
+        data.cellule || "—";
 
-document.getElementById("commune").textContent =
-    data.commune || "—";
+    document.getElementById("adhesion").textContent =
+        data.adhesion || "—";
 
-document.getElementById("cellule").textContent =
-    data.cellule || "—";
+    // =====================================
+    // PHOTO
+    // =====================================
 
-document.getElementById("adhesion").textContent =
-    data.adhesion || "—";
+    const photo = document.getElementById("photoMembre");
 
+    if (data.photo) {
+        photo.src = data.photo;
+    } else {
+        photo.style.display = "none";
+    }
 
-/* PHOTO */
+    // =====================================
+    // SIGNATURE
+    // =====================================
 
-if (data.photo) {
+    const signature = document.getElementById("signatureMembre");
 
-    document.getElementById("photoMembre").src =
-        data.photo;
+    if (data.signature) {
+        signature.src = data.signature;
+    } else {
+        signature.style.display = "none";
+    }
 
-} else {
+    // =====================================
+    // QR CODE
+    // =====================================
 
-    document.getElementById("photoMembre").style.display =
-        "none";
+    const zoneQR = document.getElementById("qrcode");
 
-}
+    zoneQR.innerHTML = "";
 
+    if (typeof QRCode !== "undefined") {
 
-/* SIGNATURE */
-
-if (data.signature) {
-
-    document.getElementById("signatureMembre").src =
-        data.signature;
-
-} else {
-
-    document.getElementById("signatureMembre").style.display =
-        "none";
-
-}
-
-
-/* QR CODE */
-
-if (numero) {
-
-    new QRCode(
-        document.getElementById("qrcode"),
-        {
+        new QRCode(zoneQR, {
             text: numero,
             width: 140,
-            height: 140
-        }
-    );
+            height: 140,
+            correctLevel: QRCode.CorrectLevel.H
+        });
 
-}
+    } else {
+
+        console.error("Bibliothèque QRCode non chargée.");
+
+        zoneQR.textContent = "QR Code indisponible";
+    }
+
+    console.log("Carte chargée :", numero);
+
+});
 
 </script>
 
