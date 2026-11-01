@@ -3,6 +3,16 @@ const GOOGLE_SCRIPT_URL =
 
 let scannerQR = null;
 let traitementEnCours = false;
+let cameraActive = false;
+let demarrageEnCours = false;
+
+const appareilMobile =
+    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+
+// ==========================================
+// INITIALISATION
+// ==========================================
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -22,18 +32,88 @@ document.addEventListener("DOMContentLoaded", () => {
     demarrerCamera();
 });
 
+
+// ==========================================
+// SÉLECTION AUTOMATIQUE DE LA CAMÉRA
+// ==========================================
+
+async function selectionnerCamera() {
+
+    const cameras = await Html5Qrcode.getCameras();
+
+    if (!cameras || cameras.length === 0) {
+        throw new Error("Aucune caméra détectée.");
+    }
+
+    console.log("Caméras disponibles :", cameras);
+
+    let cameraChoisie = null;
+
+    if (appareilMobile) {
+
+        // Sur téléphone : privilégier la caméra arrière.
+
+        cameraChoisie = cameras.find(camera =>
+            /back|rear|environment|arrière|traseira/i.test(camera.label)
+        );
+
+        // Si aucune caméra arrière n'est identifiable,
+        // utiliser la première caméra disponible.
+
+        if (!cameraChoisie) {
+            cameraChoisie = cameras[0];
+        }
+
+    } else {
+
+        // Sur ordinateur : exclure les caméras virtuelles.
+
+        const camerasPhysiques = cameras.filter(camera =>
+            !/OBS|virtual|virtuel|manycam|snap camera/i.test(camera.label)
+        );
+
+        // Privilégier la caméra HP intégrée.
+
+        cameraChoisie =
+            camerasPhysiques.find(camera =>
+                /HP True Vision|integrated|built.?in/i.test(camera.label)
+            ) || camerasPhysiques[0] || cameras[0];
+    }
+
+    console.log("Caméra sélectionnée :", cameraChoisie.label);
+
+    return cameraChoisie.id;
+}
+
+
+// ==========================================
+// DÉMARRAGE DE LA CAMÉRA
+// ==========================================
+
 async function demarrerCamera() {
 
-    if (!scannerQR || traitementEnCours) return;
+    if (!scannerQR || traitementEnCours ||
+        cameraActive || demarrageEnCours) {
+        return;
+    }
+
+    demarrageEnCours = true;
 
     try {
+
+        afficherMessage("Initialisation de la caméra...");
+
+        const cameraId = await selectionnerCamera();
+
         await scannerQR.start(
-            { facingMode: "environment" },
+            cameraId,
             {
                 fps: 10,
                 qrbox: { width: 250, height: 250 }
             },
+
             async (texteDecode) => {
+
                 if (traitementEnCours) return;
 
                 traitementEnCours = true;
@@ -42,27 +122,57 @@ async function demarrerCamera() {
 
                 await rechercherAdherent(texteDecode);
             },
+
             () => {}
         );
 
+        cameraActive = true;
+
+        console.log("Caméra démarrée avec succès.");
+
     } catch (erreur) {
+
+        console.error("Erreur démarrage caméra :", erreur);
+
+        cameraActive = false;
+
         afficherErreur(
             "Impossible d'activer la caméra. Vérifiez les autorisations."
         );
-        console.error(erreur);
+
+    } finally {
+
+        demarrageEnCours = false;
     }
 }
+
+
+// ==========================================
+// ARRÊT DE LA CAMÉRA
+// ==========================================
 
 async function arreterCamera() {
 
-    if (!scannerQR) return;
+    if (!scannerQR || !cameraActive) return;
 
     try {
+
         await scannerQR.stop();
+
+        cameraActive = false;
+
+        console.log("Caméra arrêtée.");
+
     } catch (erreur) {
-        console.log("Caméra déjà arrêtée.");
+
+        console.error("Erreur arrêt caméra :", erreur);
     }
 }
+
+
+// ==========================================
+// IMPORTATION D'UN QR CODE DEPUIS UNE IMAGE
+// ==========================================
 
 async function importerQRCode(event) {
 
@@ -71,16 +181,29 @@ async function importerQRCode(event) {
     if (!fichier) return;
 
     if (!fichier.type.startsWith("image/")) {
+
         afficherErreur("Veuillez sélectionner une image valide.");
+
         event.target.value = "";
+
         return;
     }
 
-    if (traitementEnCours) return;
+    if (traitementEnCours || demarrageEnCours) {
+
+        afficherMessage("Veuillez patienter pendant l'initialisation du scanner.");
+
+        event.target.value = "";
+
+        return;
+    }
 
     if (!scannerQR) {
+
         afficherErreur("Le système de lecture QR Code n'est pas initialisé.");
+
         event.target.value = "";
+
         return;
     }
 
@@ -90,15 +213,12 @@ async function importerQRCode(event) {
 
     try {
 
-        // Arrêter la caméra si elle est active
         await arreterCamera();
 
-        // Lire directement le QR Code dans l'image
         const resultat = await scannerQR.scanFile(fichier, false);
 
         console.log("QR Code détecté :", resultat);
 
-        // Vérifier le numéro auprès de Google Sheets
         await rechercherAdherent(resultat);
 
     } catch (erreur) {
@@ -113,18 +233,25 @@ async function importerQRCode(event) {
 
     } finally {
 
-        // Permettre de sélectionner à nouveau le même fichier
         event.target.value = "";
     }
 }
+
+
+// ==========================================
+// VÉRIFICATION AUPRÈS DE GOOGLE SHEETS
+// ==========================================
 
 async function rechercherAdherent(numero) {
 
     numero = String(numero).trim();
 
     if (!/^PDP-2026-\d{6}$/.test(numero)) {
+
         afficherErreur("Ce QR Code ne contient pas un numéro PDP valide.");
+
         traitementEnCours = false;
+
         return;
     }
 
@@ -148,8 +275,11 @@ async function rechercherAdherent(numero) {
             !data.numeroAdherent ||
             data.numeroAdherent !== numero
         ) {
+
             afficherErreur("Numéro d'adhérent introuvable.");
+
             traitementEnCours = false;
+
             return;
         }
 
@@ -157,7 +287,7 @@ async function rechercherAdherent(numero) {
 
     } catch (erreur) {
 
-        console.error(erreur);
+        console.error("Erreur de vérification :", erreur);
 
         afficherErreur(
             "Impossible de vérifier le QR Code. Réessayez."
@@ -166,6 +296,11 @@ async function rechercherAdherent(numero) {
         traitementEnCours = false;
     }
 }
+
+
+// ==========================================
+// AFFICHAGE DU RÉSULTAT POSITIF
+// ==========================================
 
 function afficherSucces(data) {
 
@@ -186,13 +321,20 @@ function afficherSucces(data) {
     statut.textContent = "Statut : " + data.statut;
 
     const date = document.createElement("p");
+
     date.textContent =
-        "Date de validation : " + (data.dateValidation || "Non renseignée");
+        "Date de validation : " +
+        (data.dateValidation || "Non renseignée");
 
     informations.append(numero, statut, date);
 
     resultat.style.display = "block";
 }
+
+
+// ==========================================
+// AFFICHAGE DES ERREURS
+// ==========================================
 
 function afficherErreur(message) {
 
@@ -209,6 +351,11 @@ function afficherErreur(message) {
     resultat.style.display = "block";
 }
 
+
+// ==========================================
+// AFFICHAGE DES MESSAGES
+// ==========================================
+
 function afficherMessage(message) {
 
     const resultat = document.getElementById("resultat");
@@ -224,13 +371,22 @@ function afficherMessage(message) {
     resultat.style.display = "block";
 }
 
+
+// ==========================================
+// NOUVEAU SCAN
+// ==========================================
+
 async function nouveauScan() {
+
+    if (demarrageEnCours) return;
 
     traitementEnCours = false;
 
     const resultat = document.getElementById("resultat");
 
     resultat.style.display = "none";
+
+    await arreterCamera();
 
     await demarrerCamera();
 }
