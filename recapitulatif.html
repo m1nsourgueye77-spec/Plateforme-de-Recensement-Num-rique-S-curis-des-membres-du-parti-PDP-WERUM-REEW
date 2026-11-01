@@ -1,456 +1,86 @@
-<!DOCTYPE html>
-<html lang="fr">
+// =====================================================
+// PDP WËRUM RÉEW
+// CONNEXION GOOGLE SHEETS
+// VERSION CORRIGÉE
+// =====================================================
 
-<head>
+const GOOGLE_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbwBJQQNzMr6P2OTFmHOJcNuF3fAjmd3-tULPyIcNaP1qjkBHZax9UD6rPCmsLlF4Mztxg/exec";
 
-    <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+// =====================================================
+// CONTRÔLE DES SOUMISSIONS
+// =====================================================
 
-    <title>Récapitulatif - Adhésion PDP Wérum Réw</title>
+let enregistrementEnCours = false;
 
-    <link rel="stylesheet" href="css/style.css">
 
-</head>
+// =====================================================
+// ENREGISTREMENT D'UNE ADHÉSION
+// =====================================================
 
-<body>
+async function envoyerVersGoogleSheets(data) {
 
-<div class="container">
-
-    <div class="pdf-header">
-    <img src="logo-pdp.jpg"
-         class="pdf-logo"
-         alt="Logo PDP Wérum Réw">
-
-    <div class="pdf-title">
-        <h1>PDP WÉRUM RÉW</h1>
-        <p>PARTI POUR LA PAIX, LE DÉVELOPPEMENT ET LA PROSPÉRITÉ</p>
-    </div>
-</div>
-
-    <h1>Vérification des informations</h1>
-
-    <p>
-        Merci de vérifier attentivement les informations ci-dessous
-        avant de valider votre adhésion.
-    </p>
-
-
-    <!-- ============================== -->
-    <!-- INFORMATIONS PERSONNELLES -->
-    <!-- ============================== -->
-
-    <h2>Informations personnelles</h2>
-
-    <table>
-
-        <tr>
-            <td>Prénom et Nom</td>
-            <td id="nom">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Date de naissance</td>
-            <td id="naissance">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Sexe</td>
-            <td id="sexe">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Téléphone</td>
-            <td id="telephone">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Adresse / Quartier</td>
-            <td id="adresse">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Profession</td>
-            <td id="profession">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Numéro de CNI Votant</td>
-            <td id="cni">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Numéro de CNI Non Votant</td>
-            <td id="nonvotant">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Numéro Carte Électeur</td>
-            <td id="electeur">Non renseigné</td>
-        </tr>
-
-    
-
-    </table>
-
-
-    <!-- ============================== -->
-    <!-- LOCALISATION POLITIQUE -->
-    <!-- ============================== -->
-
-    <h2>Localisation électorale</h2>
-
-    <table>
-
-        <tr>
-            <td>Région</td>
-            <td id="region">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Département</td>
-            <td id="departement">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Commune</td>
-            <td id="commune">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Centre de vote</td>
-            <td id="centre">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Bureau de vote N°</td>
-            <td id="bureau">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Cellule</td>
-            <td id="cellule">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Fonction dans le parti</td>
-            <td id="fonction">Non renseigné</td>
-        </tr>
-
-        <tr>
-    <td>Poste de responsabilité</td>
-    <td id="poste_responsabilite">
-        Non renseigné
-    </td>
-        </tr>
-
-        <tr>
-    <td>Numéro adhérent</td>
-    <td id="numeroAdherent">Non attribué</td>
-       </tr>
-
-       <tr>
-    <td>Date de validation</td>
-    <td id="dateValidation">Non renseignée</td>
-      </tr>
-
-        <tr>
-            <td>Date d'adhésion</td>
-            <td id="adhesion">Non renseigné</td>
-        </tr>
-
-    </table>
-
-
-    <!-- ============================== -->
-    <!-- CONTACT D'URGENCE -->
-    <!-- ============================== -->
-
-    <h2>Collecteur</h2>
-
-    <table>
-
-        <tr>
-            <td>Nom</td>
-            <td id="nomcollecteur">Non renseigné</td>
-        </tr>
-
-        <tr>
-            <td>Contact</td>
-            <td id="contactcollecteur">Non renseigné</td>
-        </tr>
-
-    </table>
-
-
-    <!-- ============================== -->
-    <!-- CERTIFICATION -->
-    <!-- ============================== -->
-
-    <div class="certification">
-
-        <label>
-
-            <input
-                type="checkbox"
-                id="certification"
-            >
-
-            Je certifie que toutes les informations fournies
-            sont exactes et j'accepte les conditions d'adhésion.
-
-        </label>
-
-    </div>
-
-
-    <!-- ============================== -->
-    <!-- ACTIONS -->
-    <!-- ============================== -->
-
-    <div class="actions">
-
-        <button
-            type="button"
-            onclick="precedent()"
-        >
-            ← Précédent
-        </button>
-
-
-        <button
-            type="button"
-            class="valider"
-            id="btnValider"
-            onclick="validerAdhesion()"
-        >
-            ✓ Valider mon adhésion
-        </button>
-
-    </div>
-
-
-    <div
-    id="exports"
-    style="margin-top:20px;">
-
-    <button
-        type="button"
-        onclick="exporterPDF()">
-        📄 Télécharger PDF
-    </button>
-
-    <button
-        type="button"
-        onclick="exporterExcel()">
-        📊 Télécharger Excel
-    </button>
-
-</div>
-
-
-    <p id="message"
-       style="margin-top:20px;">
-    </p>
-
-</div>
-
-
-<!-- ============================== -->
-<!-- JAVASCRIPT -->
-<!-- ============================== -->
-
-<script src="js/script.js"></script>
-
-<script src="js/navigation.js"></script>
-
-<script src="js/googleSheets.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-
-<script src="js/pdf.js"></script>
-<script src="js/excel.js"></script>
-
-
-<script>
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const data = chargerDonnees();
-
-    console.log(
-        "Données récupérées depuis localStorage :",
-        data
-    );
-
-
-    // ==============================
-    // AFFICHAGE
-    // ==============================
-
-    document.getElementById("nom").textContent =
-        data.nom || "Non renseigné";
-
-    document.getElementById("naissance").textContent =
-        data.naissance || "Non renseigné";
-
-    document.getElementById("sexe").textContent =
-        data.sexe || "Non renseigné";
-
-    document.getElementById("telephone").textContent =
-        data.telephone || "Non renseigné";
-
-    document.getElementById("adresse").textContent =
-        data.quartier || data.adresse || "Non renseigné";
-
-    document.getElementById("profession").textContent =
-        data.profession || "Non renseigné";
-
-    document.getElementById("cni").textContent =
-        data.cni || "Non renseigné";
-
-    document.getElementById("nonvotant").textContent =
-        data.nonvotant || "Non renseigné";
-
-    document.getElementById("electeur").textContent =
-        data.electeur || "Non renseigné";
-
-    document.getElementById("region").textContent =
-        data.region || "Non renseigné";
-
-    document.getElementById("departement").textContent =
-        data.departement || "Non renseigné";
-
-    document.getElementById("commune").textContent =
-        data.commune || "Non renseigné";
-
-    document.getElementById("centre").textContent =
-        data.centre || "Non renseigné";
-
-    document.getElementById("bureau").textContent =
-        data.bureau || "Non renseigné";
-
-    document.getElementById("cellule").textContent =
-        data.cellule || "Non renseigné";
-
-    document.getElementById("fonction").textContent =
-        data.fonction || "Non renseigné";
-
-        document.getElementById(
-    "poste_responsabilite"
-).textContent =
-    data.poste_responsabilite ||
-    "Non renseigné";
-
-    document.getElementById("numeroAdherent").textContent =
-    data.numeroAdherent || "Non attribué";
-
-    document.getElementById("dateValidation").textContent =
-    data.dateValidation
-        ? new Date(data.dateValidation).toLocaleString("fr-FR")
-        : "Non renseignée";
-
-    document.getElementById("adhesion").textContent =
-        data.adhesion || "Non renseigné";
-
-    document.getElementById("nomcollecteur").textContent =
-        data.nomcollecteur || "Non renseigné";
-
-    document.getElementById("contactcollecteur").textContent =
-        data.contactcollecteur || "Non renseigné";
-
-});
-
-
-// ============================================
-// VALIDATION DE L'ADHÉSION
-// ============================================
-
-function validerAdhesion() {
-
-    const certification =
-        document.getElementById("certification");
-
-    const bouton =
-        document.getElementById("btnValider");
+    console.log("=== ENVOI GOOGLE SHEETS ===");
+    console.log(data);
 
     const message =
         document.getElementById("message");
 
+    const bouton =
+        document.getElementById("btnValider");
 
-    // ==========================================
-    // CERTIFICATION
-    // ==========================================
 
-    if (!certification.checked) {
+    // -------------------------------------------------
+    // 1. CONTRÔLE DES ÉLÉMENTS
+    // -------------------------------------------------
 
-        alert(
-            "Veuillez cocher la case de certification avant de valider."
+    if (!message || !bouton) {
+
+        console.error(
+            "Éléments HTML message ou btnValider introuvables."
         );
 
         return;
+
     }
 
 
-    // ==========================================
-    // RÉCUPÉRATION DES DONNÉES
-    // ==========================================
+    // -------------------------------------------------
+    // 2. EMPÊCHER LES SOUMISSIONS MULTIPLES
+    // -------------------------------------------------
 
-    const data =
-        chargerDonnees();
+    if (enregistrementEnCours) {
 
+        return;
 
-    // ==========================================
-    // CERTIFICATION
-    // ==========================================
-
-    data.certification = true;
-
-
-    // ==========================================
-    // DATE DE VALIDATION
-    // ==========================================
-
-    data.dateValidation =
-        new Date().toISOString();
-
-
-    // ==========================================
-    // NUMÉRO ADHÉRENT TEMPORAIRE
-    // ==========================================
-
-    if (!data.numeroAdherent) {
-
-        const dernierNumero =
-            parseInt(
-                localStorage.getItem(
-                    "dernierNumeroPDP"
-                ) || "0"
-            );
-
-        const nouveauNumero =
-            dernierNumero + 1;
-
-
-        data.numeroAdherent =
-            "PDP-2026-" +
-            String(nouveauNumero)
-                .padStart(6, "0");
-
-
-        localStorage.setItem(
-            "dernierNumeroPDP",
-            nouveauNumero
-        );
     }
 
+    enregistrementEnCours = true;
 
-    // ==========================================
-    // SAUVEGARDE IMMÉDIATE
-    // ==========================================
+    bouton.disabled = true;
+
+    bouton.textContent =
+        "⏳ Enregistrement en cours...";
+
+    message.textContent =
+        "Connexion à la base officielle des adhérents...";
+
+
+    // -------------------------------------------------
+    // 3. SUPPRESSION DU NUMÉRO TEMPORAIRE FRONTEND
+    // -------------------------------------------------
+
+    // Le numéro officiel doit exclusivement
+    // être attribué par Google Apps Script.
+
+    delete data.numeroAdherent;
+
+    delete data.dateValidation;
+
+
+    // Sauvegarde des données du formulaire
+    // sans faux numéro d'adhérent.
 
     localStorage.setItem(
         "adhesionPDP",
@@ -458,40 +88,259 @@ function validerAdhesion() {
     );
 
 
-    // ==========================================
-    // CONTRÔLE
-    // ==========================================
+    // -------------------------------------------------
+    // 4. PRÉPARATION DE LA REQUÊTE
+    // -------------------------------------------------
 
-    console.log(
-        "DONNÉES FINALES :",
-        data
-    );
+    const controleur =
+        new AbortController();
 
-
-    // ==========================================
-    // INTERFACE
-    // ==========================================
-
-    bouton.disabled = true;
-
-    bouton.textContent =
-        "⏳ Enregistrement...";
+    const delai =
+        setTimeout(
+            () => controleur.abort(),
+            45000
+        );
 
 
-    message.textContent =
-        "Enregistrement de votre adhésion...";
+    try {
+
+        // -------------------------------------------------
+        // 5. ENVOI VERS GOOGLE APPS SCRIPT
+        // -------------------------------------------------
+
+        const response = await fetch(
+            GOOGLE_SCRIPT_URL,
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+
+                },
+
+                body: JSON.stringify(data),
+
+                signal: controleur.signal
+
+            }
+        );
 
 
-    // ==========================================
-    // GOOGLE SHEETS
-    // ==========================================
+        console.log(
+            "STATUS HTTP :",
+            response.status
+        );
 
-    envoyerVersGoogleSheets(data);
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Erreur HTTP : " + response.status
+            );
+
+        }
+
+
+        // -------------------------------------------------
+        // 6. LECTURE DE LA RÉPONSE
+        // -------------------------------------------------
+
+        const resultat =
+            await response.text();
+
+        console.log(
+            "RÉPONSE APPS SCRIPT :",
+            resultat
+        );
+
+
+        let reponse;
+
+        try {
+
+            reponse = JSON.parse(resultat);
+
+        } catch (error) {
+
+            throw new Error(
+                "Réponse Google Apps Script invalide."
+            );
+
+        }
+
+
+        // -------------------------------------------------
+        // 7. VÉRIFICATION DU SUCCÈS
+        // -------------------------------------------------
+
+        if (!reponse.success) {
+
+            throw new Error(
+                reponse.message ||
+                "Échec de l'enregistrement."
+            );
+
+        }
+
+
+        if (!reponse.numeroAdherent) {
+
+            throw new Error(
+                "Aucun numéro officiel reçu de Google Sheets."
+            );
+
+        }
+
+
+        // -------------------------------------------------
+        // 8. RÉCUPÉRATION DU NUMÉRO OFFICIEL
+        // -------------------------------------------------
+
+        data.numeroAdherent =
+            reponse.numeroAdherent;
+
+        data.dateValidation =
+            reponse.dateValidation || "";
+
+
+        // -------------------------------------------------
+        // 9. SAUVEGARDE DE L'ADHÉSION CONFIRMÉE
+        // -------------------------------------------------
+
+        localStorage.setItem(
+            "adhesionPDP",
+            JSON.stringify(data)
+        );
+
+
+        console.log(
+            "ADHÉSION CONFIRMÉE :",
+            data.numeroAdherent
+        );
+
+
+        // -------------------------------------------------
+        // 10. AFFICHAGE DU SUCCÈS
+        // -------------------------------------------------
+
+        message.textContent = "";
+
+        const confirmation =
+            document.createElement("strong");
+
+        confirmation.textContent =
+            "✓ Adhésion enregistrée avec succès.";
+
+        const saut =
+            document.createElement("br");
+
+        const numero =
+            document.createElement("strong");
+
+        numero.textContent =
+            data.numeroAdherent;
+
+        message.appendChild(confirmation);
+
+        message.appendChild(saut);
+
+        message.appendChild(
+            document.createTextNode(
+                "Numéro officiel d'adhérent : "
+            )
+        );
+
+        message.appendChild(numero);
+
+
+        bouton.textContent =
+            "✓ Adhésion enregistrée";
+
+
+        // -------------------------------------------------
+        // 11. REDIRECTION APRÈS CONFIRMATION
+        // -------------------------------------------------
+
+        setTimeout(function() {
+
+            window.location.href =
+                "merci.html";
+
+        }, 1200);
+
+
+    } catch (error) {
+
+
+        // -------------------------------------------------
+        // 12. GESTION DES ERREURS
+        // -------------------------------------------------
+
+        console.error(
+            "=== ERREUR GOOGLE SHEETS ===",
+            error
+        );
+
+
+        let messageErreur =
+            error.message;
+
+
+        if (error.name === "AbortError") {
+
+            messageErreur =
+                "Le délai de connexion a été dépassé. " +
+                "Vérifiez la base avant de réessayer.";
+
+        }
+
+
+        message.textContent = "";
+
+
+        const erreur =
+            document.createElement("strong");
+
+        erreur.textContent =
+            "✗ Échec de l'enregistrement.";
+
+        const detail =
+            document.createElement("small");
+
+        detail.textContent =
+            messageErreur;
+
+
+        message.appendChild(erreur);
+
+        message.appendChild(
+            document.createElement("br")
+        );
+
+        message.appendChild(detail);
+
+
+        bouton.disabled = false;
+
+        bouton.textContent =
+            "Réessayer l'enregistrement";
+
+
+        enregistrementEnCours = false;
+
+
+    } finally {
+
+
+        // -------------------------------------------------
+        // 13. NETTOYAGE
+        // -------------------------------------------------
+
+        clearTimeout(delai);
+
+    }
+
 }
-
-</script>
-
-
-
-</body>
-</html>
