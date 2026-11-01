@@ -24,7 +24,7 @@
 <div class="container">
 
     <img
-        src="logo-pdp.jpg"
+        src="images/logo-pdp.jpg"
         class="logo"
         alt="Logo PDP Wérum Réw"
     >
@@ -150,27 +150,15 @@
 
 function nouvelleAdhesion() {
 
-    // On supprime uniquement
-    // l'ancienne adhésion
+    // Suppression de l'ancienne adhésion
+    localStorage.removeItem("adhesionPDP");
 
-    localStorage.removeItem(
-        "adhesionPDP"
-    );
-
-    localStorage.removeItem(
-        "numeroAdherent"
-    );
-
-    localStorage.removeItem(
-        "adhesionValidee"
-    );
-
+    // Suppression des anciennes références
+    localStorage.removeItem("numeroAdherent");
+    localStorage.removeItem("adhesionValidee");
 
     // Démarrage de l'étape 1
-
-    window.location.href =
-        "etape1.html";
-
+    window.location.href = "etape1.html";
 }
 
 
