@@ -163,297 +163,112 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function telechargerPDF() {
 
-    const adhesion =
-        localStorage.getItem(
-            "adhesionPDP"
-        );
-
+    const adhesion = localStorage.getItem("adhesionPDP");
 
     if (!adhesion) {
-
-        alert(
-            "Aucune donnée d'adhésion disponible."
-        );
-
+        alert("Aucune donnée d'adhésion disponible.");
         return;
     }
-
 
     let data;
 
-
     try {
-
-        data =
-            JSON.parse(adhesion);
-
+        data = JSON.parse(adhesion);
     } catch (error) {
-
-        alert(
-            "Impossible de lire les données."
-        );
-
+        alert("Impossible de lire les données.");
+        console.error(error);
         return;
     }
 
-
-    if (!window.jspdf) {
-
-        alert(
-            "La bibliothèque PDF n'est pas chargée."
-        );
-
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("La bibliothèque PDF n'est pas chargée. Actualisez la page.");
         return;
     }
 
-
-    const { jsPDF } =
-        window.jspdf;
-
-
-    const doc =
-        new jsPDF();
-
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 
     let y = 20;
 
-
-    // =====================================
     // TITRE
-    // =====================================
-
     doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
 
-    doc.setFont(
-        "helvetica",
-        "bold"
-    );
-
-
-    doc.text(
-        "PDP WÉRUM RÉW",
-        105,
-        y,
-        {
-            align: "center"
-        }
-    );
-
+    doc.text("PDP WÉRUM RÉW", 105, y, {
+        align: "center"
+    });
 
     y += 10;
 
-
     doc.setFontSize(14);
+    doc.setFont("helvetica", "normal");
 
-    doc.setFont(
-        "helvetica",
-        "normal"
-    );
-
-
-    doc.text(
-        "FICHE D'ADHÉSION",
-        105,
-        y,
-        {
-            align: "center"
-        }
-    );
-
+    doc.text("FICHE D'ADHÉSION", 105, y, {
+        align: "center"
+    });
 
     y += 15;
 
-
-    // =====================================
     // INFORMATIONS
-    // =====================================
-
     const lignes = [
 
-        [
-            "Numéro adhérent",
-            data.numeroAdherent
-        ],
+        ["Numéro adhérent", data.numeroAdherent],
+        ["Date de validation", data.dateValidation],
+        ["Prénom et Nom", data.nom],
+        ["Date de naissance", data.naissance],
+        ["Sexe", data.sexe],
+        ["Téléphone", data.telephone],
+        ["Adresse / Quartier", data.quartier || data.adresse],
+        ["Profession", data.profession],
+        ["CNI", data.cni],
 
-        [
-            [
-            "Date de validation",
-             data.dateValidation || "Non renseignée"
-         ],
+        // Compatibilité avec les anciennes inscriptions
+        ["Ancien champ CNI non-votant", data.nonvotant],
 
-        [
-            "Prénom et Nom",
-            data.nom
-        ],
-
-        [
-            "Date de naissance",
-            data.naissance
-        ],
-
-        [
-            "Sexe",
-            data.sexe
-        ],
-
-        [
-            "Téléphone",
-            data.telephone
-        ],
-
-        [
-            "Adresse / Quartier",
-            data.quartier ||
-            data.adresse
-        ],
-
-        [
-            "Profession",
-            data.profession
-        ],
-
-        [
-            "CNI",
-            data.cni
-        ],
-
-        [
-            "Numéro Non Votant",
-            data.nonvotant
-        ],
-
-        [
-            "Carte électeur",
-            data.electeur
-        ],
-
-        [
-            "Région",
-            data.region
-        ],
-
-        [
-            "Département",
-            data.departement
-        ],
-
-        [
-            "Commune",
-            data.commune
-        ],
-
-        [
-            "Centre de vote",
-            data.centre
-        ],
-
-        [
-            "Bureau de vote",
-            data.bureau
-        ],
-
-        [
-            "Cellule",
-            data.cellule
-        ],
-
-        [
-            "Fonction",
-            data.fonction
-        ],
-
-        [
-            "Poste de responsabilité",
-            data.poste_responsabilite
-        ],
-
-        [
-            "Date d'adhésion",
-            data.adhesion
-        ],
-
-        [
-            "Collecteur",
-            data.nomcollecteur
-        ],
-
-        [
-            "Contact collecteur",
-            data.contactcollecteur
-        ]
+        ["Carte électeur", data.electeur],
+        ["Région", data.region],
+        ["Département", data.departement],
+        ["Commune", data.commune],
+        ["Centre de vote", data.centre],
+        ["Bureau de vote", data.bureau],
+        ["Cellule", data.cellule],
+        ["Fonction", data.fonction],
+        ["Poste de responsabilité", data.poste_responsabilite],
+        ["Date d'adhésion", data.adhesion],
+        ["Collecteur", data.nomcollecteur],
+        ["Contact collecteur", data.contactcollecteur]
 
     ];
 
-
-    // =====================================
-    // AFFICHAGE
-    // =====================================
-
+    // AFFICHAGE DES INFORMATIONS
     doc.setFontSize(10);
 
+    lignes.forEach(function ([label, valeur]) {
 
-    lignes.forEach(
-        function ([label, valeur]) {
-
-
-            if (y > 275) {
-
-                doc.addPage();
-
-                y = 20;
-
-            }
-
-
-            doc.setFont(
-                "helvetica",
-                "bold"
-            );
-
-
-            doc.text(
-                label + " :",
-                20,
-                y
-            );
-
-
-            doc.setFont(
-                "helvetica",
-                "normal"
-            );
-
-
-            doc.text(
-                String(
-                    valeur ||
-                    "Non renseigné"
-                ),
-                80,
-                y
-            );
-
-
-            y += 8;
-
+        if (y > 275) {
+            doc.addPage();
+            y = 20;
         }
-    );
 
+        doc.setFont("helvetica", "bold");
+        doc.text(label + " :", 20, y);
 
-    // =====================================
+        doc.setFont("helvetica", "normal");
+
+        const texte = String(valeur || "Non renseigné");
+
+        const lignesTexte = doc.splitTextToSize(texte, 110);
+
+        doc.text(lignesTexte, 80, y);
+
+        y += Math.max(8, lignesTexte.length * 5);
+
+    });
+
     // TÉLÉCHARGEMENT
-    // =====================================
+    const numero = data.numeroAdherent || "PDP";
 
-    const numero =
-        data.numeroAdherent ||
-        "PDP";
-
-
-    doc.save(
-        "Adhesion_" +
-        numero +
-        ".pdf"
-    );
+    doc.save("Adhesion_" + numero + ".pdf");
 
 }
 
