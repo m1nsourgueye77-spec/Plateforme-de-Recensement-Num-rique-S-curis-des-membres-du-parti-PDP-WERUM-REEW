@@ -49,15 +49,28 @@
 <input type="text" name="profession">
 
 
-<label> Numéro de CNI Votant</label>
-<input type="text" name="cni" placeholder="Votant">
+<label>Statut électoral</label>
+<select name="statut_electoral" id="statut_electoral" required>
+    <option value="">Choisir</option>
+    <option value="Votant">Votant</option>
+    <option value="Non votant">Non votant</option>
+</select>
 
-<label> Numéro de CNI Non Votant</label>
-<input type="text" name="nonvotant" placeholder="nonvotant">
+<label>Numéro de CNI</label>
+<input
+    type="text"
+    name="cni"
+    id="cni"
+    placeholder="Saisir le numéro de CNI"
+    required
+>
 
-
-<label>Numéro Carte Electeur</label>
-<input type="text" name="electeur">
+<label>Numéro Carte Électeur (facultatif)</label>
+<input
+    type="text"
+    name="electeur"
+    placeholder="Numéro de carte d'électeur (facultatif)"
+>
 
 
 
@@ -78,8 +91,32 @@ Suivant
 <script>
 const form = document.getElementById("form1");
 
+
+const statut = document.getElementById("statut_electoral");
+const cni = document.getElementById("cni");
+
+statut.addEventListener("change", function () {
+
+    cni.required = true;
+
+    if (this.value === "Votant") {
+        cni.placeholder = "CNI obligatoire - Votant";
+    } 
+    else if (this.value === "Non votant") {
+        cni.placeholder = "CNI obligatoire - Non votant";
+    }
+
+});
+
 // Remplit les champs si des données existent déjà
 remplirFormulaire();
+
+// Restaurer le placeholder selon le statut électoral enregistré
+if (statut.value === "Votant") {
+    cni.placeholder = "CNI obligatoire - Votant";
+} else if (statut.value === "Non votant") {
+    cni.placeholder = "CNI obligatoire - Non votant";
+}
 
 form.addEventListener("submit", function(e){
 
